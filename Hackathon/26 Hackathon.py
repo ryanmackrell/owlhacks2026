@@ -1,7 +1,7 @@
 import pyscript
 from pyscript import display
 
-display("hello world")
+display("testing this!!")
 
 
 
