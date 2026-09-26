@@ -1,16 +1,8 @@
-// -------------------------
-// AQUAGUESSR GAME SYSTEM
-// -------------------------
 
 let currentRound = 1;
 let totalScore = 0;
 
 const maxRounds = 5;
-
-
-// -------------------------
-// UPDATE SCREEN
-// -------------------------
 
 function updateGameDisplay() {
 
