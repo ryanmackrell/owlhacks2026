@@ -16,5 +16,5 @@ else if (distance <= 100) {
     score += 1000;
 }
 
-system.out.println("Score: " + score);
-system.out.println("Distance: " + distance + " km");
+console.log("Score: " + score);
+console.log("Distance: " + distance + " km");
