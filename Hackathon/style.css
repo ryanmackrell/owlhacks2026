@@ -20,13 +20,14 @@ body {
 }
 
 
-button {
+.button {
     font-size: 18px;
     padding: 10px 20px;
-    color: black
+    color: black;
+    background-color: white;
     
 }
-button.hover {
+.button.hover {
     background-color: black;
     color: white
 }
