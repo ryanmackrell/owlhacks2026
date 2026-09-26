@@ -1,94 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>AquaGuessr</title>
-
-    <!-- Leaflet CSS -->
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    >
-
-    <!-- Our CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-    <h1>🌊 AquaGuessr</h1>
-
-    <h2>Where does this fish live?</h2>
-
-    <!-- Fish information -->
+    <h1>🌊 Welcome to AquaGuessr 🌊</h1>
+    <h2>Guess the animal location!</h2>
+    <button id="start-game">Start Game</button>
     <div id="fish-container">
-
-        <img
-            id="fish-image"
-            src=""
-            alt="Fish"
-        >
-
+        <img id="fish-image" src="" alt="Fish">
         <h3 id="fish-name">Fish Name</h3>
-
     </div>
-
-
-    <!-- Game information -->
     <div id="game-info">
-
-        <p>
-            Round:
-            <span id="round-number">1</span>
-            / 5
-        </p>
-
-        <p>
-            Score:
-            <span id="total-score">0</span>
-        </p>
-
+        <p>Round: <span id="round-number">1</span> / 5</p>
+        <p>Score: <span id="total-score">0</span></p>
     </div>
-
-
-    <!-- Map -->
     <div id="map"></div>
-
-
-    <!-- Game buttons -->
-    <button id="submit-button">
-        Submit Guess
-    </button>
-
-    <button id="next-button" style="display: none;">
-        Next Fish
-    </button>
-
-
-    <!-- Round result -->
+    <button id="next-button" style="display: none;">Next Fish</button>
     <p id="result"></p>
-
-
-    <!-- Leaflet JavaScript -->
-    <script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-    </script>
-
-
-    <!-- Our JavaScript -->
-
-    <!-- Controls the Leaflet map -->
-    <script src="js/map.js"></script>
-
-    <!-- Calculates points -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- <script src="js/map.js"></script>
     <script src="js/scoring.js"></script>
-
-    <!-- Controls rounds and game flow -->
-    <script src="js/game.js"></script>
-
+    <script src="js/game.js"></script> -->
 </body>
-
-</html>
+</html)
