@@ -3,15 +3,17 @@
 // -------------------------
 
 const worldBounds = L.latLngBounds(
-    L.latLng(-85, -180),
-    L.latLng(85, 180)
+    L.latLng(-85, -Infinity),
+    L.latLng(85, Infinity)
 );
 
 const map = L.map("map", {
     maxBounds: worldBounds,
     maxBoundsViscosity: 1.0,
     minZoom: 2,
-    maxZoom: 10
+    maxZoom: 10,
+    zoom: 3,
+    maxBoundsViscosity: 1.0,
 }).setView([15, 0], 2);
 
 
@@ -23,7 +25,7 @@ L.tileLayer(
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     {
         attribution: "Tiles &copy; Esri",
-        noWrap: true,
+        noWrap: false,
         maxZoom: 18
     }
 ).addTo(map);

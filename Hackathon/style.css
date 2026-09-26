@@ -14,18 +14,20 @@ body {
     animation: ChangingColors 15s ease infinite;
 }
 #map {
-    height: 500px;
+    height: 100%;
     width: 100%;
     margin: 20px auto;
     /*border-radius: 30px;*/
     border-style: none;
     border-radius: 15px;
+    position:absolute;
     
     width: 200vw;
-    min-height: 100vh;
-    
-    
+    min-height: 200svh;
+    background-repeat: repeat;
 }
+
+
 
 #fish-image {
     width: 300px;
