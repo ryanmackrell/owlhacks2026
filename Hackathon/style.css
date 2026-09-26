@@ -19,7 +19,9 @@ body {
 #map {
     height: 100svh;
     width: 100vw;
-    margin: 20px auto;
+    margin: 0;
+    background-size: 100% 100%;
+    z-index: -1;
 
 
     
@@ -33,7 +35,7 @@ body {
     right: 20px;
     width: 150px;
     height: auto;
-    z-index: 2;
+    z-index: 1;
     
 }
 
