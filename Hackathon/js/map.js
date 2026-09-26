@@ -59,10 +59,11 @@ let guessLocked = false;
 
 
 // -------------------------
-// ACTUAL RANGE VARIABLE
+// RANGE VARIABLES
 // -------------------------
 
-let actualRangeLayer = null;
+let currentRangeLayer = null;
+let historicalRangeLayer = null;
 
 
 // -------------------------
@@ -142,28 +143,26 @@ function unlockGuess() {
 
 
 // -------------------------
-// SHOW ACTUAL RANGE
+// SHOW CURRENT RANGE
 // -------------------------
 
-function showActualRange(range) {
+function showCurrentRange(range) {
 
-    // Remove old range if one exists
-    if (actualRangeLayer) {
-        map.removeLayer(actualRangeLayer);
+    // Remove previous current range
+    if (currentRangeLayer) {
+        map.removeLayer(currentRangeLayer);
     }
 
-
-    // Create range polygon
-    actualRangeLayer = L.polygon(range, {
-        color: "#8b5cf6",
+    // Draw current range
+    currentRangeLayer = L.polygon(range, {
+        color: "#22c55e",
         weight: 3,
-        fillColor: "#8b5cf6",
+        fillColor: "#22c55e",
         fillOpacity: 0.35
     }).addTo(map);
 
-
     // Add label
-    actualRangeLayer.bindTooltip("Actual Range", {
+    currentRangeLayer.bindTooltip("Current Range", {
         permanent: true,
         direction: "center"
     });
@@ -171,16 +170,47 @@ function showActualRange(range) {
 
 
 // -------------------------
-// CLEAR ACTUAL RANGE
+// SHOW HISTORICAL RANGE
 // -------------------------
 
-function clearActualRange() {
+function showHistoricalRange(range) {
 
-    if (actualRangeLayer) {
+    // Remove previous historical range
+    if (historicalRangeLayer) {
+        map.removeLayer(historicalRangeLayer);
+    }
 
-        map.removeLayer(actualRangeLayer);
+    // Draw historical range
+    historicalRangeLayer = L.polygon(range, {
+        color: "#8b5cf6",
+        weight: 3,
+        fillColor: "#8b5cf6",
+        fillOpacity: 0.20,
+        dashArray: "8, 6"
+    }).addTo(map);
 
-        actualRangeLayer = null;
+    // Add label
+    historicalRangeLayer.bindTooltip("Historical Range", {
+        permanent: true,
+        direction: "center"
+    });
+}
+
+
+// -------------------------
+// CLEAR RANGES
+// -------------------------
+
+function clearRanges() {
+
+    if (currentRangeLayer) {
+        map.removeLayer(currentRangeLayer);
+        currentRangeLayer = null;
+    }
+
+    if (historicalRangeLayer) {
+        map.removeLayer(historicalRangeLayer);
+        historicalRangeLayer = null;
     }
 }
 
@@ -192,14 +222,11 @@ function clearActualRange() {
 function clearGuess() {
 
     if (guessMarker) {
-
         map.removeLayer(guessMarker);
-
         guessMarker = null;
     }
 
     playerGuess = null;
-
     guessLocked = false;
 }
 
@@ -210,26 +237,10 @@ function clearGuess() {
 
 function resetMap() {
 
-    // Remove player marker
     clearGuess();
+    clearRanges();
 
-
-    // Remove actual animal range
-    clearActualRange();
-
-
-    // Return to world view
     map.setView([15, 0], 2);
 
-
-    // Fix dragging state
     updateDragging();
-
-    showActualRange([
-    [30, -80],
-    [25, -70],
-    [15, -65],
-    [10, -75],
-    [20, -85]
-]);
 }
