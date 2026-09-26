@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AquaGuessr</title>
+
+    <link rel="stylesheet" href="https://pyscript.net/releases/2026.7.3/core.css"/>
+    <script type="module" src="https://pyscript.net/releases/2026.7.3/core.js"></script>
+</head>
+
+<body>
+
+    <h1>🌊 AquaGuessr</h1>
+    <script type="py" src="./26 Hackathon.py" config="./species.json"></script>
+
+    <div id="game">
+        
+        <h2>Where does this animal live?</h2>
+
+        <img id="fish-image" src="" alt="Fish">
+
+        <h3 id="fish-name"></h3>
+
+        <div id="map"></div>
+
+        <button id="submit-button">Submit Guess</button>
+
+        <p id="result"></p>
+    </div>
+    
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
