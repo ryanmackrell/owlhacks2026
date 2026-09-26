@@ -21,6 +21,29 @@ function updateGameDisplay() {
         totalScore;
 }
 
+//-------------------------
+// Calculate Score
+//-------------------------
+
+function calculateScore(distance) {
+
+    if (distance <= 1) {
+        return 5000;
+    }
+    else if (distance <= 10) {
+        return 4000;
+    }
+    else if (distance <= 50) {
+        return 3000;
+    }
+    else if (distance <= 100) {
+        return 2000;
+    }
+    else {
+        return 1000;
+    }
+}
+
 
 // -------------------------
 // START GAME
