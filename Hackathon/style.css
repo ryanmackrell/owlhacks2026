@@ -45,8 +45,7 @@ body {
 
 #submit-butto:before {
     font-size: 18px;
-    padding: 10px;
-    border: 2px solid;
+    padding: 10px 20px;
     color: black;
     background-color: white;
     border-radius: 25px;
@@ -61,5 +60,6 @@ body {
 }
 #submit-button:hover {
     background-color: black;
+
     color: white
 }
