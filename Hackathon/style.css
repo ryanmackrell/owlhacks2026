@@ -1,7 +1,11 @@
+
+
+
 body {
     font-family: Arial, sans-serif;
     text-align: center;
     margin: 0;
+    background: linear-gradient(lightblue,black);
 }
 
 #map {
@@ -16,7 +20,14 @@ body {
     object-fit: cover;
 }
 
+
 button {
     font-size: 18px;
     padding: 10px 20px;
+    color: black
+    
+}
+button.hover {
+    background-color: black;
+    color: white
 }

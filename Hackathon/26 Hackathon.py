@@ -1,8 +1,13 @@
 import pyscript
 from pyscript import display
 
+<<<<<<< HEAD
 display("testing this!!")
+=======
+>>>>>>> a2571e5 (Refactor display call and update CSS styles for improved layout)
 
+
+#display("hello world")
 
 
 
