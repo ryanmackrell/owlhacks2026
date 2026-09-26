@@ -17,9 +17,23 @@ body {
     background: linear-gradient(lightblue,black);
 }
 #map {
-    height: 500px;
-    width: 80%;
+    height: 100svh;
+    width: 100vw;
     margin: 20px auto;
+
+    
+    
+    
+}
+
+#QuestionBox {
+    position:absolute;
+    top:20px;
+    right: 20px;
+    width: 150px;
+    height: auto;
+    z-index: 2;
+    
 }
 
 #fish-image {

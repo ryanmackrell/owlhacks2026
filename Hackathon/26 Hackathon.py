@@ -118,7 +118,7 @@ for attempt in range(max_retries):
         # Your Gemini API call
         response = client.models.generate_content(
             model="gemini-3.8-flash",
-            contents="Give me data about a Great White Shark."
+            contents="Give me data about a leatherback."
         )
         
         # Success! Print/use the text and break out of the loop
