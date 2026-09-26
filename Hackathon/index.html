@@ -5,19 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AquaGuessr</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://pyscript.net/releases/2026.7.3/core.css">
+    <script type="module" src="https://pyscript.net/releases/2026.7.3/core.js"></script>
 </head>
-<body>
+
+<body class="intro_page">
+    <div id="background"></div>
     <h1>🌊 Welcome to AquaGuessr 🌊</h1>
     <h2>Guess the animal location!</h2>
 
     <a href="game.html">
         <button>Start Game</button>
     </a>
-    <script src="26 Hackathon.py"></script> -->
+    <script type='py' src="26 Hackathon.py" target="ai_output" config="species.json"></script>
     
     <div id="about-us">
         <img id="fish-image" src="https://cdn.britannica.com/34/240534-050-B8C4B11E/Porcupine-fish-Diodon-hystox.jpg" alt="Fish" width="500" height="500">
     </div>
+
+
+    <div id="ai_output"></div>
+
+
     <div id="game-info">
         <p>Round: <span id="round-number">1</span> / 5</p>
         <p>Score: <span id="total-score">0</span></p>

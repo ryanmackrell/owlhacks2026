@@ -1,9 +1,11 @@
 from google import genai
-
+from pyscript import display
 from google.genai import types
+import time
+from google.genai.errors import ServerError
 
-client = genai.Client()
-
+client = genai.Client(api_key='AQ.Ab8RN6Ie5dPji-slFgQ4PxpUly2VVCjeDI7QOP-uigQNlvo4QQ')
+print('IM STARTING')
 sea_creatures_schema = {
   "type": "OBJECT",
   "properties": {
@@ -110,6 +112,25 @@ sea_creatures_schema = {
     "fun_facts"
   ]
 }
-
-response = client.generate(sea_creatures_schema)
-print(response)
+max_retries=5
+for attempt in range(max_retries):
+    try:
+        # Your Gemini API call
+        response = client.models.generate_content(
+            model="gemini-3.8-flash",
+            contents="Give me data about a Great White Shark."
+        )
+        
+        # Success! Print/use the text and break out of the loop
+        display(response.text)
+        break
+        
+    except ServerError as e:
+        print(f"Attempt {attempt + 1} failed due to high demand (503). Retrying in {retry_delay} seconds...")
+        
+        if attempt < max_retries - 1:
+            time.sleep(retry_delay)
+            retry_delay *= 2  # Double the wait time for the next try (exponential backoff)
+        else:
+            print("Max retries reached. The server is still busy. Please try again later.")
+            raise e
