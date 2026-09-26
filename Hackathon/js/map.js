@@ -1,6 +1,40 @@
-// -------------------------
+// =========================================================
+// AQUAGUESSR - MAP.JS
+// =========================================================
+
+
+// =========================================================
+// LOAD TURF.JS
+// =========================================================
+
+const turfReady = new Promise(function (resolve, reject) {
+
+    if (window.turf) {
+        resolve();
+        return;
+    }
+
+    const script = document.createElement("script");
+
+    script.src =
+        "https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js";
+
+    script.onload = function () {
+        console.log("Turf loaded.");
+        resolve();
+    };
+
+    script.onerror = function () {
+        reject(new Error("Could not load Turf.js"));
+    };
+
+    document.head.appendChild(script);
+});
+
+
+// =========================================================
 // CREATE MAP
-// -------------------------
+// =========================================================
 
 const worldBounds = L.latLngBounds(
     L.latLng(-85, -180),
@@ -10,14 +44,17 @@ const worldBounds = L.latLngBounds(
 const map = L.map("map", {
     maxBounds: worldBounds,
     maxBoundsViscosity: 1.0,
+
     minZoom: 2,
-    maxZoom: 10
+    maxZoom: 10,
+
+    worldCopyJump: false
 }).setView([15, 0], 2);
 
 
-// -------------------------
+// =========================================================
 // MAP TILES
-// -------------------------
+// =========================================================
 
 L.tileLayer(
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
@@ -29,9 +66,9 @@ L.tileLayer(
 ).addTo(map);
 
 
-// -------------------------
+// =========================================================
 // MAP MOVEMENT
-// -------------------------
+// =========================================================
 
 function updateDragging() {
 
@@ -44,50 +81,30 @@ function updateDragging() {
 
 updateDragging();
 
-map.on("zoomend", function () {
-    updateDragging();
-});
+map.on("zoomend", updateDragging);
 
 
-// -------------------------
-// PLAYER GUESS VARIABLES
-// -------------------------
+// =========================================================
+// PLAYER GUESS
+// =========================================================
 
 let playerGuess = null;
 let guessMarker = null;
 let guessLocked = false;
 
 
-// -------------------------
-// RANGE VARIABLES
-// -------------------------
-
-let currentRangeLayer = null;
-let historicalRangeLayer = null;
-
-
-// -------------------------
-// PLAYER CLICKS MAP
-// -------------------------
-
 map.on("click", function (event) {
 
-    // Don't allow guess to change after submitting
     if (guessLocked) {
         return;
     }
 
-    // Save clicked location
     playerGuess = event.latlng;
 
-
-    // Remove previous marker
     if (guessMarker) {
         map.removeLayer(guessMarker);
     }
 
-
-    // Add new marker
     guessMarker = L.marker([
         playerGuess.lat,
         playerGuess.lng
@@ -102,145 +119,1352 @@ map.on("click", function (event) {
 });
 
 
-// -------------------------
-// CHECK FOR GUESS
-// -------------------------
+// =========================================================
+// GUESS FUNCTIONS
+// =========================================================
 
 function hasPlayerGuessed() {
-
     return playerGuess !== null;
 }
 
 
-// -------------------------
-// GET PLAYER GUESS
-// -------------------------
-
 function getPlayerGuess() {
-
     return playerGuess;
 }
 
 
-// -------------------------
-// LOCK GUESS
-// -------------------------
-
 function lockGuess() {
-
     guessLocked = true;
 }
 
 
-// -------------------------
-// UNLOCK GUESS
-// -------------------------
-
 function unlockGuess() {
-
     guessLocked = false;
 }
 
 
-// -------------------------
-// SHOW CURRENT RANGE
-// -------------------------
+// =========================================================
+// RANGE VARIABLES
+// =========================================================
 
-function showCurrentRange(range) {
+let currentRangeLayer = null;
+let historicalRangeLayer = null;
 
-    // Remove previous current range
-    if (currentRangeLayer) {
-        map.removeLayer(currentRangeLayer);
+let currentRangeGeoJSON = null;
+let historicalRangeGeoJSON = null;
+
+
+// =========================================================
+// LAND MASK
+// =========================================================
+
+let landMask = null;
+let landReady = null;
+
+
+/*
+    Loads:
+
+        Hackathon/data/land.geojson
+
+    You already confirmed this file is accessible at:
+
+        /Hackathon/data/land.geojson
+*/
+
+function loadLandMask() {
+
+    if (landReady) {
+        return landReady;
     }
 
-    // Draw current range
-    currentRangeLayer = L.polygon(range, {
-        color: "#22c55e",
-        weight: 3,
-        fillColor: "#22c55e",
-        fillOpacity: 0.35
-    }).addTo(map);
+    landReady = fetch("data/land.geojson")
+        .then(function (response) {
 
-    // Add label
-    currentRangeLayer.bindTooltip("Current Range", {
-        permanent: true,
-        direction: "center"
-    });
+            if (!response.ok) {
+
+                throw new Error(
+                    "Could not load land.geojson. HTTP " +
+                    response.status
+                );
+            }
+
+            return response.json();
+        })
+        .then(function (data) {
+
+            landMask = data;
+
+            console.log(
+                "Land mask loaded:",
+                landMask.features
+                    ? landMask.features.length
+                    : 0,
+                "features"
+            );
+
+            return landMask;
+        })
+        .catch(function (error) {
+
+            console.error(
+                "LAND MASK ERROR:",
+                error
+            );
+
+            landMask = null;
+
+            return null;
+        });
+
+    return landReady;
 }
 
 
-// -------------------------
-// SHOW HISTORICAL RANGE
-// -------------------------
+// Start loading immediately.
+loadLandMask();
 
-function showHistoricalRange(range) {
 
-    // Remove previous historical range
+// =========================================================
+// OBIS SETTINGS
+// =========================================================
+
+const OBIS_GRID_PRECISION = 3;
+
+
+// Older observations
+const HISTORICAL_END_DATE =
+    "2000-12-31";
+
+
+// Recent observations
+const CURRENT_START_DATE =
+    "2001-01-01";
+
+
+// =========================================================
+// RANGE SHAPE SETTINGS
+// =========================================================
+
+/*
+    We can make these a little larger again because
+    land will be cut out AFTER the range is generated.
+*/
+
+const CLUSTER_DISTANCE_KM = 450;
+
+const HULL_DISTANCE_KM = 800;
+
+const FINAL_BUFFER_KM = 50;
+
+const SMALL_CLUSTER_BUFFER_KM = 70;
+
+const MIN_HULL_POINTS = 3;
+
+
+// =========================================================
+// GET OBIS DATA
+// =========================================================
+
+async function getObisGrid(
+    scientificName,
+    extraFilter = ""
+) {
+
+    const url =
+        "https://api.obis.org/v3/occurrence/grid/" +
+        OBIS_GRID_PRECISION +
+        "?scientificname=" +
+        encodeURIComponent(scientificName) +
+        extraFilter;
+
+
+    console.log(
+        "OBIS request:",
+        url
+    );
+
+
+    const response =
+        await fetch(url);
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "OBIS request failed: " +
+            response.status
+        );
+    }
+
+
+    return await response.json();
+}
+
+
+// =========================================================
+// CONVERT OBIS CELLS TO POINTS
+// =========================================================
+
+function cellsToPoints(data) {
+
+    const points = [];
+
+
+    if (
+        !data ||
+        !data.features
+    ) {
+
+        return turf.featureCollection([]);
+    }
+
+
+    data.features.forEach(function (feature) {
+
+        if (!feature.geometry) {
+            return;
+        }
+
+
+        try {
+
+            const center =
+                turf.centroid(feature);
+
+
+            const longitude =
+                center.geometry.coordinates[0];
+
+            const latitude =
+                center.geometry.coordinates[1];
+
+
+            if (
+                longitude < -180 ||
+                longitude > 180 ||
+                latitude < -85 ||
+                latitude > 85
+            ) {
+
+                return;
+            }
+
+
+            points.push(
+                turf.point([
+                    longitude,
+                    latitude
+                ])
+            );
+
+        } catch (error) {
+
+            console.warn(
+                "Skipped invalid OBIS feature."
+            );
+        }
+    });
+
+
+    return turf.featureCollection(points);
+}
+
+
+// =========================================================
+// CLUSTER OBSERVATIONS
+// =========================================================
+
+function clusterPoints(points) {
+
+    if (
+        !points ||
+        !points.features ||
+        points.features.length === 0
+    ) {
+
+        return [];
+    }
+
+
+    const clustered =
+        turf.clustersDbscan(
+            points,
+            CLUSTER_DISTANCE_KM,
+            {
+                units: "kilometers",
+                minPoints: 2,
+                mutate: false
+            }
+        );
+
+
+    const groups = {};
+
+
+    clustered.features.forEach(function (feature) {
+
+        const cluster =
+            feature.properties.cluster;
+
+
+        // Ignore isolated noise points.
+        if (
+            cluster === undefined ||
+            cluster === null
+        ) {
+
+            return;
+        }
+
+
+        if (!groups[cluster]) {
+            groups[cluster] = [];
+        }
+
+
+        groups[cluster].push(feature);
+    });
+
+
+    return Object.values(groups);
+}
+
+
+// =========================================================
+// DETECT DATE-LINE PROBLEMS
+// =========================================================
+
+function crossesDateLine(feature) {
+
+    if (
+        !feature ||
+        !feature.geometry
+    ) {
+
+        return false;
+    }
+
+
+    const geometry =
+        feature.geometry;
+
+
+    let rings = [];
+
+
+    if (geometry.type === "Polygon") {
+
+        rings =
+            geometry.coordinates;
+
+    } else if (
+        geometry.type === "MultiPolygon"
+    ) {
+
+        geometry.coordinates.forEach(
+            function (polygon) {
+
+                polygon.forEach(
+                    function (ring) {
+
+                        rings.push(ring);
+                    }
+                );
+            }
+        );
+
+    } else {
+
+        return false;
+    }
+
+
+    for (const ring of rings) {
+
+        for (
+            let i = 1;
+            i < ring.length;
+            i++
+        ) {
+
+            const previousLongitude =
+                ring[i - 1][0];
+
+            const currentLongitude =
+                ring[i][0];
+
+
+            if (
+                Math.abs(
+                    currentLongitude -
+                    previousLongitude
+                ) > 180
+            ) {
+
+                return true;
+            }
+        }
+    }
+
+
+    return false;
+}
+
+
+// =========================================================
+// BUILD RANGE FROM CLUSTER
+// =========================================================
+
+function buildClusterRange(features) {
+
+    if (
+        !features ||
+        features.length === 0
+    ) {
+
+        return null;
+    }
+
+
+    const collection =
+        turf.featureCollection(features);
+
+
+    // =====================================================
+    // THREE OR MORE OBSERVATIONS
+    // =====================================================
+
+    if (
+        features.length >=
+        MIN_HULL_POINTS
+    ) {
+
+        try {
+
+            // Try a concave hull first.
+            let hull =
+                turf.concave(
+                    collection,
+                    {
+                        maxEdge:
+                            HULL_DISTANCE_KM,
+
+                        units:
+                            "kilometers"
+                    }
+                );
+
+
+            // Fallback if concave fails.
+            if (!hull) {
+
+                hull =
+                    turf.convex(collection);
+            }
+
+
+            if (!hull) {
+                return null;
+            }
+
+
+            if (
+                crossesDateLine(hull)
+            ) {
+
+                console.log(
+                    "Rejected date-line hull."
+                );
+
+                return null;
+            }
+
+
+            let buffered =
+                turf.buffer(
+                    hull,
+                    FINAL_BUFFER_KM,
+                    {
+                        units:
+                            "kilometers",
+
+                        steps: 16
+                    }
+                );
+
+
+            if (!buffered) {
+                buffered = hull;
+            }
+
+
+            if (
+                crossesDateLine(buffered)
+            ) {
+
+                console.log(
+                    "Rejected buffered date-line polygon."
+                );
+
+                return null;
+            }
+
+
+            const simplified =
+                turf.simplify(
+                    buffered,
+                    {
+                        tolerance: 0.02,
+                        highQuality: true,
+                        mutate: false
+                    }
+                );
+
+
+            if (
+                crossesDateLine(simplified)
+            ) {
+
+                return null;
+            }
+
+
+            return simplified;
+
+        } catch (error) {
+
+            console.warn(
+                "Hull failed:",
+                error
+            );
+
+            return null;
+        }
+    }
+
+
+    // =====================================================
+    // TWO OBSERVATIONS
+    // =====================================================
+
+    if (features.length === 2) {
+
+        try {
+
+            const first =
+                features[0];
+
+            const second =
+                features[1];
+
+
+            const lng1 =
+                first.geometry.coordinates[0];
+
+            const lng2 =
+                second.geometry.coordinates[0];
+
+
+            if (
+                Math.abs(lng1 - lng2) >
+                180
+            ) {
+
+                return null;
+            }
+
+
+            const line =
+                turf.lineString([
+                    first.geometry.coordinates,
+                    second.geometry.coordinates
+                ]);
+
+
+            const buffered =
+                turf.buffer(
+                    line,
+                    SMALL_CLUSTER_BUFFER_KM,
+                    {
+                        units:
+                            "kilometers",
+
+                        steps: 16
+                    }
+                );
+
+
+            if (
+                buffered &&
+                !crossesDateLine(buffered)
+            ) {
+
+                return buffered;
+            }
+
+
+            return null;
+
+        } catch (error) {
+
+            return null;
+        }
+    }
+
+
+    // =====================================================
+    // ONE OBSERVATION
+    // =====================================================
+
+    try {
+
+        const buffered =
+            turf.buffer(
+                features[0],
+                SMALL_CLUSTER_BUFFER_KM,
+                {
+                    units:
+                        "kilometers",
+
+                    steps: 16
+                }
+            );
+
+
+        if (
+            buffered &&
+            !crossesDateLine(buffered)
+        ) {
+
+            return buffered;
+        }
+
+
+        return null;
+
+    } catch (error) {
+
+        return null;
+    }
+}
+
+
+// =========================================================
+// BOUNDING BOX OVERLAP
+// =========================================================
+
+function boundingBoxesOverlap(
+    firstFeature,
+    secondFeature
+) {
+
+    try {
+
+        const first =
+            turf.bbox(firstFeature);
+
+        const second =
+            turf.bbox(secondFeature);
+
+
+        return !(
+            first[2] < second[0] ||
+            first[0] > second[2] ||
+            first[3] < second[1] ||
+            first[1] > second[3]
+        );
+
+    } catch (error) {
+
+        return false;
+    }
+}
+
+
+// =========================================================
+// REMOVE LAND FROM RANGE
+// =========================================================
+
+function removeLandFromPolygon(rangePolygon) {
+
+    if (!rangePolygon) {
+        return null;
+    }
+
+
+    // If land failed to load, DON'T pretend clipping
+    // succeeded. Return original polygon but warn loudly.
+    if (
+        !landMask ||
+        !landMask.features
+    ) {
+
+        console.warn(
+            "Land mask unavailable. Range was not clipped."
+        );
+
+        return rangePolygon;
+    }
+
+
+    let result =
+        rangePolygon;
+
+
+    let landPiecesChecked = 0;
+    let landPiecesSubtracted = 0;
+
+
+    for (const landFeature of landMask.features) {
+
+        if (!result) {
+            break;
+        }
+
+
+        if (
+            !landFeature ||
+            !landFeature.geometry
+        ) {
+
+            continue;
+        }
+
+
+        /*
+            Don't run Turf difference against continents
+            nowhere near this animal range.
+        */
+
+        if (
+            !boundingBoxesOverlap(
+                result,
+                landFeature
+            )
+        ) {
+
+            continue;
+        }
+
+
+        landPiecesChecked++;
+
+
+        try {
+
+            /*
+                Turf 7 difference takes a FeatureCollection.
+
+                First feature = range
+                Second feature = land
+
+                Result = range MINUS land
+            */
+
+            const difference =
+                turf.difference(
+                    turf.featureCollection([
+                        result,
+                        landFeature
+                    ])
+                );
+
+
+            /*
+                null means the land polygon completely
+                removed this range.
+            */
+
+            if (!difference) {
+
+                result = null;
+                break;
+            }
+
+
+            result = difference;
+
+            landPiecesSubtracted++;
+
+        } catch (error) {
+
+            console.warn(
+                "Land subtraction failed:",
+                error
+            );
+        }
+    }
+
+
+    console.log(
+        "Land clipping:",
+        landPiecesChecked,
+        "nearby land features checked,",
+        landPiecesSubtracted,
+        "subtractions completed."
+    );
+
+
+    return result;
+}
+
+
+// =========================================================
+// CREATE COMPLETE DISTRIBUTION
+// =========================================================
+
+function createDistribution(data) {
+
+    const points =
+        cellsToPoints(data);
+
+
+    console.log(
+        "Usable OBIS cells:",
+        points.features.length
+    );
+
+
+    if (
+        points.features.length === 0
+    ) {
+
+        return null;
+    }
+
+
+    const clusters =
+        clusterPoints(points);
+
+
+    console.log(
+        "Geographic clusters:",
+        clusters.length
+    );
+
+
+    const polygons = [];
+
+
+    clusters.forEach(function (cluster) {
+
+        // ---------------------------------------------
+        // CREATE ORIGINAL RANGE
+        // ---------------------------------------------
+
+        let polygon =
+            buildClusterRange(cluster);
+
+
+        if (!polygon) {
+            return;
+        }
+
+
+        // ---------------------------------------------
+        // REMOVE ALL LAND
+        // ---------------------------------------------
+
+        polygon =
+            removeLandFromPolygon(
+                polygon
+            );
+
+
+        // Land may completely erase a bad polygon.
+        if (!polygon) {
+
+            console.log(
+                "Range removed because it was entirely on land."
+            );
+
+            return;
+        }
+
+
+        // ---------------------------------------------
+        // FINAL DATE-LINE CHECK
+        // ---------------------------------------------
+
+        if (
+            crossesDateLine(polygon)
+        ) {
+
+            console.log(
+                "Skipped world-crossing polygon."
+            );
+
+            return;
+        }
+
+
+        polygons.push(polygon);
+    });
+
+
+    if (
+        polygons.length === 0
+    ) {
+
+        console.warn(
+            "No valid ocean range polygons created."
+        );
+
+        return null;
+    }
+
+
+    /*
+        IMPORTANT:
+
+        DO NOT union all clusters globally.
+
+        Keeping them separate prevents distant
+        populations from drawing giant lines
+        across the planet.
+    */
+
+    return turf.featureCollection(
+        polygons
+    );
+}
+
+
+// =========================================================
+// HISTORICAL OBSERVATIONS
+// =========================================================
+
+async function showHistoricalRange(
+    scientificName
+) {
+
+    await turfReady;
+
+    // IMPORTANT:
+    // Wait for the land data before building polygons.
+    await loadLandMask();
+
+
     if (historicalRangeLayer) {
-        map.removeLayer(historicalRangeLayer);
+
+        map.removeLayer(
+            historicalRangeLayer
+        );
+
+        historicalRangeLayer =
+            null;
     }
 
-    // Draw historical range
-    historicalRangeLayer = L.polygon(range, {
-        color: "#8b5cf6",
-        weight: 3,
-        fillColor: "#8b5cf6",
-        fillOpacity: 0.20,
-        dashArray: "8, 6"
-    }).addTo(map);
 
-    // Add label
-    historicalRangeLayer.bindTooltip("Historical Range", {
-        permanent: true,
-        direction: "center"
-    });
+    historicalRangeGeoJSON =
+        null;
+
+
+    try {
+
+        const data =
+            await getObisGrid(
+                scientificName,
+
+                "&enddate=" +
+                HISTORICAL_END_DATE
+            );
+
+
+        if (
+            !data.features ||
+            data.features.length === 0
+        ) {
+
+            console.log(
+                "No older observations:",
+                scientificName
+            );
+
+            return null;
+        }
+
+
+        const distribution =
+            createDistribution(data);
+
+
+        if (!distribution) {
+            return null;
+        }
+
+
+        historicalRangeGeoJSON =
+            distribution;
+
+
+        historicalRangeLayer =
+            L.geoJSON(
+                distribution,
+                {
+                    style: {
+
+                        color:
+                            "#a855f7",
+
+                        weight: 2,
+
+                        opacity: 0.85,
+
+                        dashArray:
+                            "8 6",
+
+                        fillColor:
+                            "#a855f7",
+
+                        fillOpacity:
+                            0.13,
+
+                        lineJoin:
+                            "round",
+
+                        lineCap:
+                            "round"
+                    }
+                }
+            )
+            .addTo(map);
+
+
+        console.log(
+            "Older observations displayed."
+        );
+
+
+        return historicalRangeLayer;
+
+    } catch (error) {
+
+        console.error(
+            "Historical range error:",
+            error
+        );
+
+        return null;
+    }
 }
 
 
-// -------------------------
+// =========================================================
+// CURRENT OBSERVATIONS
+// =========================================================
+
+async function showCurrentRange(
+    scientificName
+) {
+
+    await turfReady;
+
+    // IMPORTANT:
+    // Wait for the land file BEFORE making the range.
+    await loadLandMask();
+
+
+    if (currentRangeLayer) {
+
+        map.removeLayer(
+            currentRangeLayer
+        );
+
+        currentRangeLayer =
+            null;
+    }
+
+
+    currentRangeGeoJSON =
+        null;
+
+
+    try {
+
+        const data =
+            await getObisGrid(
+                scientificName,
+
+                "&startdate=" +
+                CURRENT_START_DATE
+            );
+
+
+        if (
+            !data.features ||
+            data.features.length === 0
+        ) {
+
+            console.log(
+                "No recent observations:",
+                scientificName
+            );
+
+            return null;
+        }
+
+
+        const distribution =
+            createDistribution(data);
+
+
+        if (!distribution) {
+            return null;
+        }
+
+
+        currentRangeGeoJSON =
+            distribution;
+
+
+        currentRangeLayer =
+            L.geoJSON(
+                distribution,
+                {
+                    style: {
+
+                        color:
+                            "#22c55e",
+
+                        weight: 2,
+
+                        opacity: 0.95,
+
+                        fillColor:
+                            "#22c55e",
+
+                        fillOpacity:
+                            0.30,
+
+                        lineJoin:
+                            "round",
+
+                        lineCap:
+                            "round"
+                    }
+                }
+            )
+            .addTo(map);
+
+
+        currentRangeLayer
+            .bringToFront();
+
+
+        console.log(
+            "Recent observations displayed."
+        );
+
+
+        return currentRangeLayer;
+
+    } catch (error) {
+
+        console.error(
+            "Current range error:",
+            error
+        );
+
+        return null;
+    }
+}
+
+
+// =========================================================
+// SHOW SPECIES DISTRIBUTION
+// =========================================================
+
+async function showSpeciesDistribution(
+    scientificName
+) {
+
+    await turfReady;
+
+    await loadLandMask();
+
+
+    console.log(
+        "Loading species:",
+        scientificName
+    );
+
+
+    clearRanges();
+
+
+    // Purple underneath
+    await showHistoricalRange(
+        scientificName
+    );
+
+
+    // Green on top
+    await showCurrentRange(
+        scientificName
+    );
+
+
+    console.log(
+        "Finished loading:",
+        scientificName
+    );
+}
+
+
+// =========================================================
+// CHECK IF GUESS IS INSIDE CURRENT RANGE
+// =========================================================
+
+function isGuessInsideCurrentRange() {
+
+    if (
+        !playerGuess ||
+        !currentRangeGeoJSON ||
+        !window.turf
+    ) {
+
+        return false;
+    }
+
+
+    const guessPoint =
+        turf.point([
+            playerGuess.lng,
+            playerGuess.lat
+        ]);
+
+
+    for (
+        const feature
+        of currentRangeGeoJSON.features
+    ) {
+
+        try {
+
+            if (
+                turf.booleanPointInPolygon(
+                    guessPoint,
+                    feature
+                )
+            ) {
+
+                return true;
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "Could not test polygon."
+            );
+        }
+    }
+
+
+    return false;
+}
+
+
+// =========================================================
+// GET RANGE DATA
+// =========================================================
+
+function getCurrentRangeLayer() {
+    return currentRangeLayer;
+}
+
+
+function getHistoricalRangeLayer() {
+    return historicalRangeLayer;
+}
+
+
+function getCurrentRangeGeoJSON() {
+    return currentRangeGeoJSON;
+}
+
+
+function getHistoricalRangeGeoJSON() {
+    return historicalRangeGeoJSON;
+}
+
+
+// =========================================================
 // CLEAR RANGES
-// -------------------------
+// =========================================================
 
 function clearRanges() {
 
     if (currentRangeLayer) {
-        map.removeLayer(currentRangeLayer);
-        currentRangeLayer = null;
+
+        map.removeLayer(
+            currentRangeLayer
+        );
+
+        currentRangeLayer =
+            null;
     }
 
+
     if (historicalRangeLayer) {
-        map.removeLayer(historicalRangeLayer);
-        historicalRangeLayer = null;
+
+        map.removeLayer(
+            historicalRangeLayer
+        );
+
+        historicalRangeLayer =
+            null;
     }
+
+
+    currentRangeGeoJSON =
+        null;
+
+    historicalRangeGeoJSON =
+        null;
 }
 
 
-// -------------------------
-// CLEAR PLAYER GUESS
-// -------------------------
+// =========================================================
+// CLEAR GUESS
+// =========================================================
 
 function clearGuess() {
 
     if (guessMarker) {
-        map.removeLayer(guessMarker);
-        guessMarker = null;
+
+        map.removeLayer(
+            guessMarker
+        );
+
+        guessMarker =
+            null;
     }
 
+
     playerGuess = null;
+
     guessLocked = false;
 }
 
 
-// -------------------------
+// =========================================================
 // RESET MAP
-// -------------------------
+// =========================================================
 
 function resetMap() {
 
     clearGuess();
+
     clearRanges();
 
-    map.setView([15, 0], 2);
+
+    map.setView(
+        [15, 0],
+        2
+    );
+
 
     updateDragging();
 }
