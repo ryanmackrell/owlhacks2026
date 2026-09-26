@@ -113,6 +113,7 @@ sea_creatures_schema = {
   ]
 }
 max_retries=5
+retry_delay=2
 for attempt in range(max_retries):
     try:
         # Your Gemini API call
