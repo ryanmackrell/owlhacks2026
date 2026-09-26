@@ -1106,7 +1106,7 @@ async function showHistoricalRange(
                     style: {
 
                         color:
-                            "#a855f7",
+                            "#ff8c00",
 
                         weight: 2,
 
@@ -1116,7 +1116,7 @@ async function showHistoricalRange(
                             "8 6",
 
                         fillColor:
-                            "#a855f7",
+                            "#ff8c00",
 
                         fillOpacity:
                             0.13,
@@ -1226,14 +1226,14 @@ async function showCurrentRange(
                     style: {
 
                         color:
-                            "#22c55e",
+                            "#00e5ff",
 
                         weight: 2,
 
                         opacity: 0.95,
 
                         fillColor:
-                            "#22c55e",
+                            "#00e5ff",
 
                         fillOpacity:
                             0.30,
