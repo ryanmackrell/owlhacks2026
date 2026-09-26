@@ -88,6 +88,7 @@ map.on("click", function (event) {
 
     // Create marker at new location
 // Create marker at new location
+// Create marker at new location
 guessMarker = L.marker([
     playerGuess.lat,
     playerGuess.lng
@@ -95,7 +96,8 @@ guessMarker = L.marker([
 .addTo(map)
 .bindTooltip("Your Guess", {
     permanent: true,
-    direction: "top"
+    direction: "top",
+    offset: [-15, -12]
 })
 .openTooltip();
 });
