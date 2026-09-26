@@ -2,33 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>AquaGuessr</title>
 
-    <link rel="stylesheet" href="https://pyscript.net/releases/2026.7.3/core.css"/>
-    <script type="module" src="https://pyscript.net/releases/2026.7.3/core.js"></script>
+    <!-- Leaflet map CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <h1>🌊 AquaGuessr</h1>
-    <script type="py" src="./26 Hackathon.py" config="./species.json"></script>
+    <h1>AquaGuessr</h1>
+    <h2>Where does this fish live?</h2>
 
-    <div id="game">
-        
-        <h2>Where does this animal live?</h2>
-
+    <div id="fish-container">
         <img id="fish-image" src="" alt="Fish">
-
-        <h3 id="fish-name"></h3>
-
-        <div id="map"></div>
-
-        <button id="submit-button">Submit Guess</button>
-
-        <p id="result"></p>
+        <h3 id="fish-name">Fish Name</h3>
     </div>
-    
 
+    <div id="map"></div>
+
+    <button id="submit-button">Submit Guess</button>
+
+    <p id="result"></p>
+
+    <!-- Leaflet -->
     <script
         src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
     </script>
