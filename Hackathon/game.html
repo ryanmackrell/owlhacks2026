@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<div class="background">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,11 +15,7 @@
     <!-- Our CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
-<span class="ball"></span>
-<span class="ball"></span>
-<span class="ball"></span>
-<span class="ball"></span>
-<span class="ball"></span>
+<div id="QuestionBox">
 <body>
 
     <h1>🌊 AquaGuessr 🌊</h1>
@@ -53,13 +49,14 @@
             Score:
             <span id="total-score">0</span>
         </p>
-
+  <button id="submit-button">
+        Submit Guess
+    </button>
     </div>
-
-
+</div>
     <!-- Map -->
-    <div id="map"></div>
-
+    <!--<div id="map"></div>
+-->
 
     <!-- Game buttons -->
     <button id="submit-button">
@@ -70,16 +67,15 @@
         Next Fish
     </button>
 
-
     <!-- Round result -->
     <p id="result"></p>
 
-
+     <div id="map">
     <!-- Leaflet JavaScript -->
-    <script
+    <script id="map "
         src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
     </script>
-
+</div>
 
     <!-- Our JavaScript -->
 
@@ -93,5 +89,4 @@
     <script src="js/game.js"></script>
 
 </body>
-</div>
-</html>
+</html

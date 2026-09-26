@@ -1,49 +1,11 @@
 
-@keyframes ChangingColors {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100%{background-position: 0% 50%;}
+@keyframes myAnimation {
+    0% {background-color:red; left:0px; top:0px;}
+    25% {background-color: yellow; left:200px; top:0px;}
+    50% {background-color: lightcoral; left:200px; top:200px;}
+    75% {background-color: orange; left:0px; top:200px;}
+    100% {background-color: red; left:0px; top:0px;}
 }
-
-@keyframes Ball{
-    100% {
-        transform: translate3d(0,0,1px) rotate(360deg);
-    }
-}
-
-
-
- .ball {
-    position: absolute;
-    width: 20vmin;
-    height: 20vmin;
-    border-radius: 50%;
-    backface-visibility:hidden;
-    animation: Ball linear infinite;
-}
-
-.ball:nth-child(odd){
-    color: white;
-
-}
-.ball:nth-child(even){
-    color: black;
-
-}
-
-*/
-
-.ball:nth-child(1){
-    top: 77%;
-  left: 88%;
-  animation-duration: 40s;
-  animation-delay: -3s;
-  transform-origin: 16vw -2vh;
-  box-shadow: 40vmin 0 5.703076368487546vmin currentColor;
-}
-
-
-
 
 
 
@@ -52,14 +14,29 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     margin: 0;
-    animation: ChangingColors 15s ease infinite;
-    backgr
-    animation-duration: 100s; 
+    background: linear-gradient(lightblue,black);
 }
 #map {
-    height: 500px;
-    width: 80%;
-    margin: 20px auto;
+    height: 100svh;
+    width: 100vw;
+    margin: 0;
+    background-size: 100% 100%;
+    z-index: 1;
+
+
+    
+    
+    
+}
+
+#QuestionBox {
+    position:absolute;
+    top:20px;
+    left: 20px;
+    width: 150px;
+    height: auto;
+    z-index: 1000;
+    
 }
 
 #fish-image {
@@ -71,8 +48,7 @@ body {
 
 #submit-butto:before {
     font-size: 18px;
-    padding: 10px;
-    border: 2px solid;
+    padding: 10px 50px;
     color: black;
     background-color: white;
     border-radius: 25px;
@@ -81,9 +57,6 @@ body {
 
 
     
-}
-#submit-button::after {
-
 }
 #submit-button:hover {
     background-color: black;
