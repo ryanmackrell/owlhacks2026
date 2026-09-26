@@ -10,13 +10,16 @@ const map = L.map("map", {
     maxZoom: 10
 }).setView([15, 0], 2);
 
+
 L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     {
-        attribution: "&copy; OpenStreetMap contributors",
-        noWrap: true
+        attribution: "Tiles &copy; Esri",
+        noWrap: true,
+        maxZoom: 18
     }
 ).addTo(map);
+
 
 
 // Lock movement when fully zoomed out
