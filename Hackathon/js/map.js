@@ -35,7 +35,6 @@ L.tileLayer(
 
 function updateDragging() {
 
-    // Lock movement when completely zoomed out
     if (map.getZoom() === map.getMinZoom()) {
         map.dragging.disable();
     } else {
@@ -43,12 +42,8 @@ function updateDragging() {
     }
 }
 
-
-// Run when map first loads
 updateDragging();
 
-
-// Check again whenever player zooms
 map.on("zoomend", function () {
     updateDragging();
 });
@@ -64,42 +59,45 @@ let guessLocked = false;
 
 
 // -------------------------
+// ACTUAL RANGE VARIABLE
+// -------------------------
+
+let actualRangeLayer = null;
+
+
+// -------------------------
 // PLAYER CLICKS MAP
 // -------------------------
 
 map.on("click", function (event) {
 
-    // Don't allow the player to change
-    // their answer after submitting
+    // Don't allow guess to change after submitting
     if (guessLocked) {
         return;
     }
-
 
     // Save clicked location
     playerGuess = event.latlng;
 
 
-    // Remove old marker if one exists
+    // Remove previous marker
     if (guessMarker) {
         map.removeLayer(guessMarker);
     }
 
 
-    // Create marker at new location
-// Create marker at new location
-// Create marker at new location
-guessMarker = L.marker([
-    playerGuess.lat,
-    playerGuess.lng
-])
-.addTo(map)
-.bindTooltip("Your Guess", {
-    permanent: true,
-    direction: "top",
-    offset: [-15, -12]
-})
-.openTooltip();
+    // Add new marker
+    guessMarker = L.marker([
+        playerGuess.lat,
+        playerGuess.lng
+    ])
+    .addTo(map)
+    .bindTooltip("Your Guess", {
+        permanent: true,
+        direction: "top",
+        offset: [-15, -12]
+    })
+    .openTooltip();
 });
 
 
@@ -144,21 +142,64 @@ function unlockGuess() {
 
 
 // -------------------------
-// CLEAR GUESS
+// SHOW ACTUAL RANGE
+// -------------------------
+
+function showActualRange(range) {
+
+    // Remove old range if one exists
+    if (actualRangeLayer) {
+        map.removeLayer(actualRangeLayer);
+    }
+
+
+    // Create range polygon
+    actualRangeLayer = L.polygon(range, {
+        color: "#8b5cf6",
+        weight: 3,
+        fillColor: "#8b5cf6",
+        fillOpacity: 0.35
+    }).addTo(map);
+
+
+    // Add label
+    actualRangeLayer.bindTooltip("Actual Range", {
+        permanent: true,
+        direction: "center"
+    });
+}
+
+
+// -------------------------
+// CLEAR ACTUAL RANGE
+// -------------------------
+
+function clearActualRange() {
+
+    if (actualRangeLayer) {
+
+        map.removeLayer(actualRangeLayer);
+
+        actualRangeLayer = null;
+    }
+}
+
+
+// -------------------------
+// CLEAR PLAYER GUESS
 // -------------------------
 
 function clearGuess() {
 
-    // Remove marker
     if (guessMarker) {
+
         map.removeLayer(guessMarker);
+
         guessMarker = null;
     }
 
-    // Remove stored coordinates
     playerGuess = null;
 
-    // Allow another guess
     guessLocked = false;
 }
 
@@ -169,12 +210,26 @@ function clearGuess() {
 
 function resetMap() {
 
-    // Remove previous guess
+    // Remove player marker
     clearGuess();
 
-    // Return map to starting location/zoom
+
+    // Remove actual animal range
+    clearActualRange();
+
+
+    // Return to world view
     map.setView([15, 0], 2);
 
-    // Make sure dragging state is correct
+
+    // Fix dragging state
     updateDragging();
+
+    showActualRange([
+    [30, -80],
+    [25, -70],
+    [15, -65],
+    [10, -75],
+    [20, -85]
+]);
 }
