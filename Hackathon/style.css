@@ -1,0 +1,22 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+}
+
+#map {
+    height: 500px;
+    width: 80%;
+    margin: 20px auto;
+}
+
+#fish-image {
+    width: 300px;
+    height: 200px;
+    object-fit: cover;
+}
+
+button {
+    font-size: 18px;
+    padding: 10px 20px;
+}
