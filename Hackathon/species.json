@@ -1,5 +1,30 @@
 {
-
-  "packages": ["google-genai"]
-
+  "game_data": {
+    "round_id": "fish_geo_98231",
+    "difficulty": "Medium",
+    "target_coordinates": {
+      "latitude": -18.2871,
+      "longitude": 147.6992,
+      "location_description": "Great Barrier Reef, Coral Sea"
+    },
+    "multiple_choice_options": [
+      "Clown anemonefish",
+      "Blue Tang",
+      "Mantis Shrimp",
+      "Parrotfish"
+    ],
+    "correct_answer": "Clown anemonefish"
+  },
+  "clues": {
+    "habitat_hint": "Lives in shallow tropical coral reef waters (1-15 meters deep), forming symbiotic bonds with sea anemones.",
+    "diet_hint": "An omnivore that feeds on small zooplankton, algae, and leftovers from its host host's meals.",
+    "physical_hint": "Features bright orange coloration with bold white vertical bands outlined in narrow black lines.",
+    "fun_fact_hint": "All individuals are born male; the dominant fish in a group can transition into a female if needed."
+  },
+  "full_species_profile": {
+    "common_name": "Clown anemonefish",
+    "scientific_name": "Amphiprion ocellaris",
+    "conservation_status": "Least Concern",
+    "diet_type": "Omnivore"
+  }
 }
