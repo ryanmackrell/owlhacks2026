@@ -1,65 +1,28 @@
 
 @keyframes ChangingColors {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100%{background-position: 0% 50%;}
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
-
-@keyframes Ball{
-    100% {
-        transform: translate3d(0,0,1px) rotate(360deg);
-    }
-}
-
-
-
- .ball {
-    position: absolute;
-    width: 20vmin;
-    height: 20vmin;
-    border-radius: 50%;
-    backface-visibility:hidden;
-    animation: Ball linear infinite;
-}
-
-.ball:nth-child(odd){
-    color: white;
-
-}
-.ball:nth-child(even){
-    color: black;
-
-}
-
-*/
-
-.ball:nth-child(1){
-    top: 77%;
-  left: 88%;
-  animation-duration: 40s;
-  animation-delay: -3s;
-  transform-origin: 16vw -2vh;
-  box-shadow: 40vmin 0 5.703076368487546vmin currentColor;
-}
-
-
-
-
-
-
 
 body {
     font-family: Arial, sans-serif;
     text-align: center;
     margin: 0;
+    background: linear-gradient(132deg, #E6F6FF, green,#5b56f7,white);
+    background-size: 400% 400%;
     animation: ChangingColors 15s ease infinite;
-    backgr
-    animation-duration: 100s; 
 }
 #map {
     height: 500px;
     width: 80%;
     margin: 20px auto;
+    /*border-radius: 30px;*/
+    border-style: none;
+    border-radius: 15px;
+    width: 100vw;
+    min-height: 100svh;
+    
 }
 
 #fish-image {
