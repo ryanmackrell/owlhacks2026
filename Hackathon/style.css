@@ -1,4 +1,13 @@
 
+@keyframes myAnimation {
+    0% {background-color:red; left:0px; top:0px;}
+    25% {background-color: yellow; left:200px; top:0px;}
+    50% {background-color: lightcoral; left:200px; top:200px;}
+    75% {background-color: orange; left:0px; top:200px;}
+    100% {background-color: red; left:0px; top:0px;}
+}
+
+
 
 
 body {
@@ -20,14 +29,23 @@ body {
 }
 
 
-.button {
+#submit-butto:before {
     font-size: 18px;
-    padding: 10px 20px;
+    padding: 10px;
+    border: 2px solid;
     color: black;
     background-color: white;
+    border-radius: 25px;
+    cursor:grab;
+    box-shadow: 0 5px 10px black
+
+
     
 }
-.button.hover {
+#submit-button::after {
+
+}
+#submit-button:hover {
     background-color: black;
     color: white
 }

@@ -1,3 +1,5 @@
+from google import genai
+
 {
   "type": "OBJECT",
   "properties": {
@@ -104,3 +106,4 @@
     "fun_facts"
   ]
 }
+
