@@ -1,8 +1,16 @@
+// -------------------------
+// GAME VARIABLES
+// -------------------------
 
 let currentRound = 1;
 let totalScore = 0;
 
 const maxRounds = 5;
+
+
+// -------------------------
+// UPDATE GAME DISPLAY
+// -------------------------
 
 function updateGameDisplay() {
 
@@ -23,6 +31,8 @@ function startGame() {
     currentRound = 1;
     totalScore = 0;
 
+    resetMap();
+
     document.getElementById("result").textContent = "";
 
     document.getElementById("submit-button").style.display =
@@ -41,20 +51,47 @@ function startGame() {
 
 function submitGuess() {
 
-    // Temporary score for testing.
-    // Later scoring.js will calculate this.
+    // Make sure player selected somewhere
+    if (!hasPlayerGuessed()) {
+
+        document.getElementById("result").textContent =
+            "Select a location on the map first!";
+
+        return;
+    }
+
+
+    // Stop player from changing their answer
+    lockGuess();
+
+
+    // -------------------------
+    // TEMPORARY SCORE
+    // -------------------------
+    //
+    // scoring.js will replace this later
+
     const roundScore = 1000;
 
+
+    // Add score
     totalScore += roundScore;
 
+
+    // Show result
     document.getElementById("result").textContent =
         "Round Score: +" + roundScore;
 
+
+    // Hide Submit
     document.getElementById("submit-button").style.display =
         "none";
 
+
+    // Show Next Fish
     document.getElementById("next-button").style.display =
         "inline-block";
+
 
     updateGameDisplay();
 }
@@ -68,19 +105,33 @@ function nextRound() {
 
     currentRound++;
 
+
+    // Check if game is finished
     if (currentRound > maxRounds) {
 
         endGame();
+
         return;
     }
 
+
+    // Reset map
+    resetMap();
+
+
+    // Clear previous result
     document.getElementById("result").textContent = "";
 
+
+    // Show Submit again
     document.getElementById("submit-button").style.display =
         "inline-block";
 
+
+    // Hide Next Fish
     document.getElementById("next-button").style.display =
         "none";
+
 
     updateGameDisplay();
 }
@@ -92,19 +143,34 @@ function nextRound() {
 
 function endGame() {
 
+    // Lock map
+    lockGuess();
+
+
+    // Hide buttons
     document.getElementById("submit-button").style.display =
         "none";
 
     document.getElementById("next-button").style.display =
         "none";
 
+
+    // Display final score
     document.getElementById("result").innerHTML =
         `
         <h2>Game Over!</h2>
-        <h3>Final Score: ${totalScore}</h3>
-        <button id="play-again-button">Play Again</button>
+
+        <h3>
+            Final Score: ${totalScore}
+        </h3>
+
+        <button id="play-again-button">
+            Play Again
+        </button>
         `;
 
+
+    // Play again button
     document
         .getElementById("play-again-button")
         .addEventListener("click", startGame);
@@ -112,12 +178,13 @@ function endGame() {
 
 
 // -------------------------
-// BUTTONS
+// BUTTON EVENTS
 // -------------------------
 
 document
     .getElementById("submit-button")
     .addEventListener("click", submitGuess);
+
 
 document
     .getElementById("next-button")
@@ -125,7 +192,7 @@ document
 
 
 // -------------------------
-// START
+// START GAME
 // -------------------------
 
 startGame();

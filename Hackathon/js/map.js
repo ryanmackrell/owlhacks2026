@@ -1,3 +1,7 @@
+// -------------------------
+// CREATE MAP
+// -------------------------
+
 const worldBounds = L.latLngBounds(
     L.latLng(-85, -180),
     L.latLng(85, 180)
@@ -11,6 +15,10 @@ const map = L.map("map", {
 }).setView([15, 0], 2);
 
 
+// -------------------------
+// MAP TILES
+// -------------------------
+
 L.tileLayer(
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     {
@@ -21,23 +29,22 @@ L.tileLayer(
 ).addTo(map);
 
 
-// Lock movement when fully zoomed out
+// -------------------------
+// MAP MOVEMENT
+// -------------------------
+
 function updateDragging() {
 
+    // Lock map when completely zoomed out
     if (map.getZoom() === map.getMinZoom()) {
         map.dragging.disable();
     } else {
         map.dragging.enable();
     }
-
 }
 
-
-// Run when map loads
 updateDragging();
 
-
-// Run every time user zooms
 map.on("zoomend", function () {
     updateDragging();
 });
@@ -49,34 +56,91 @@ map.on("zoomend", function () {
 
 let playerGuess = null;
 let guessMarker = null;
+let guessLocked = false;
 
 
-// When player clicks somewhere on the map
+// Player clicks somewhere on map
 map.on("click", function (event) {
 
+    // Don't allow changing guess after Submit
+    if (guessLocked) {
+        return;
+    }
+
     playerGuess = event.latlng;
+
 
     // Remove previous marker
     if (guessMarker) {
         map.removeLayer(guessMarker);
     }
 
-    // Add marker at clicked location
+
+    // Add new marker
     guessMarker = L.marker([
         playerGuess.lat,
         playerGuess.lng
-    ]).addTo(map);
-
+    ])
+    .addTo(map)
+    .bindTooltip("Your Guess", {
+        permanent: true,
+        direction: "top",
+        offset: [0, -10]
+    })
+    .openTooltip();
 });
 
 
-// Remove guess when starting a new round
-function clearGuess() {
+// -------------------------
+// LOCK GUESS
+// -------------------------
 
+function lockGuess() {
+
+    guessLocked = true;
+}
+
+
+// -------------------------
+// CHECK IF PLAYER GUESSED
+// -------------------------
+
+function hasPlayerGuessed() {
+
+    return playerGuess !== null;
+}
+
+
+// -------------------------
+// GET PLAYER GUESS
+// -------------------------
+
+function getPlayerGuess() {
+
+    return playerGuess;
+}
+
+
+// -------------------------
+// RESET MAP
+// -------------------------
+
+function resetMap() {
+
+    // Remove marker
     if (guessMarker) {
         map.removeLayer(guessMarker);
         guessMarker = null;
     }
 
+    // Clear coordinates
     playerGuess = null;
+
+    // Unlock guessing
+    guessLocked = false;
+
+    // Return map to beginning
+    map.setView([15, 0], 2);
+
+    updateDragging();
 }
