@@ -1,5 +1,4 @@
-import pyscript
-from pyscript import display
+
 
 <<<<<<< HEAD
 display("testing this!!")

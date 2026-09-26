@@ -7,7 +7,6 @@ body {
     margin: 0;
     background: linear-gradient(lightblue,black);
 }
-
 #map {
     height: 500px;
     width: 80%;
