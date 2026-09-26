@@ -35,7 +35,7 @@ L.tileLayer(
 
 function updateDragging() {
 
-    // Lock map when completely zoomed out
+    // Lock movement when completely zoomed out
     if (map.getZoom() === map.getMinZoom()) {
         map.dragging.disable();
     } else {
@@ -43,15 +43,19 @@ function updateDragging() {
     }
 }
 
+
+// Run when map first loads
 updateDragging();
 
+
+// Check again whenever player zooms
 map.on("zoomend", function () {
     updateDragging();
 });
 
 
 // -------------------------
-// PLAYER GUESS
+// PLAYER GUESS VARIABLES
 // -------------------------
 
 let playerGuess = null;
@@ -59,50 +63,46 @@ let guessMarker = null;
 let guessLocked = false;
 
 
-// Player clicks somewhere on map
+// -------------------------
+// PLAYER CLICKS MAP
+// -------------------------
+
 map.on("click", function (event) {
 
-    // Don't allow changing guess after Submit
+    // Don't allow the player to change
+    // their answer after submitting
     if (guessLocked) {
         return;
     }
 
+
+    // Save clicked location
     playerGuess = event.latlng;
 
 
-    // Remove previous marker
+    // Remove old marker if one exists
     if (guessMarker) {
         map.removeLayer(guessMarker);
     }
 
 
-    // Add new marker
-    guessMarker = L.marker([
-        playerGuess.lat,
-        playerGuess.lng
-    ])
-    .addTo(map)
-    .bindTooltip("Your Guess", {
-        permanent: true,
-        direction: "top",
-        offset: [0, -10]
-    })
-    .openTooltip();
+    // Create marker at new location
+// Create marker at new location
+guessMarker = L.marker([
+    playerGuess.lat,
+    playerGuess.lng
+])
+.addTo(map)
+.bindTooltip("Your Guess", {
+    permanent: true,
+    direction: "top"
+})
+.openTooltip();
 });
 
 
 // -------------------------
-// LOCK GUESS
-// -------------------------
-
-function lockGuess() {
-
-    guessLocked = true;
-}
-
-
-// -------------------------
-// CHECK IF PLAYER GUESSED
+// CHECK FOR GUESS
 // -------------------------
 
 function hasPlayerGuessed() {
@@ -122,10 +122,30 @@ function getPlayerGuess() {
 
 
 // -------------------------
-// RESET MAP
+// LOCK GUESS
 // -------------------------
 
-function resetMap() {
+function lockGuess() {
+
+    guessLocked = true;
+}
+
+
+// -------------------------
+// UNLOCK GUESS
+// -------------------------
+
+function unlockGuess() {
+
+    guessLocked = false;
+}
+
+
+// -------------------------
+// CLEAR GUESS
+// -------------------------
+
+function clearGuess() {
 
     // Remove marker
     if (guessMarker) {
@@ -133,14 +153,26 @@ function resetMap() {
         guessMarker = null;
     }
 
-    // Clear coordinates
+    // Remove stored coordinates
     playerGuess = null;
 
-    // Unlock guessing
+    // Allow another guess
     guessLocked = false;
+}
 
-    // Return map to beginning
+
+// -------------------------
+// RESET MAP
+// -------------------------
+
+function resetMap() {
+
+    // Remove previous guess
+    clearGuess();
+
+    // Return map to starting location/zoom
     map.setView([15, 0], 2);
 
+    // Make sure dragging state is correct
     updateDragging();
 }
