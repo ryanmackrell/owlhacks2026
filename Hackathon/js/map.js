@@ -66,6 +66,35 @@ L.tileLayer(
     }
 ).addTo(map);
 
+// Add readable geographic names above the satellite imagery.
+const geographicLabels = [
+    { name: "Arctic Ocean", position: [75, 0], type: "ocean" },
+    { name: "Pacific Ocean", position: [5, -155], type: "ocean" },
+    { name: "Atlantic Ocean", position: [15, -35], type: "ocean" },
+    { name: "Indian Ocean", position: [-20, 80], type: "ocean" },
+    { name: "Southern Ocean", position: [-60, 20], type: "ocean" },
+    { name: "North America", position: [42, -105], type: "continent" },
+    { name: "South America", position: [-15, -60], type: "continent" },
+    { name: "Europe", position: [53, 20], type: "continent" },
+    { name: "Africa", position: [5, 20], type: "continent" },
+    { name: "Asia", position: [42, 90], type: "continent" },
+    { name: "Australia", position: [-25, 135], type: "continent" },
+    { name: "Antarctica", position: [-78, 0], type: "continent" }
+];
+
+geographicLabels.forEach(function (label) {
+
+    L.marker(label.position, {
+        icon: L.divIcon({
+            className: "geographic-label geographic-label--" + label.type,
+            html: label.name,
+            iconSize: null
+        }),
+        interactive: false,
+        keyboard: false
+    }).addTo(map);
+});
+
 
 // =========================================================
 // MAP MOVEMENT
