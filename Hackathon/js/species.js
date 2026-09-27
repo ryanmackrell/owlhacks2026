@@ -560,13 +560,6 @@ const species = [
         funFact: "Alligator gars can breathe both air and water."
     },
     {
-        name: "Glass Catfish",
-        scientificName: "Kryptopterus vitreolus",
-        image: "data/images/Glass Catfish.jpg",
-        conservationStatus: "Least Concern",
-        funFact: "Much of its body is transparent."
-    },
-    {
         name: "African Lungfish",
         scientificName: "Protopterus annectens",
         image: "data/images/African Lungfish.jpg",

@@ -3,9 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>AquaGuessr</title>
+
     <!-- Leaflet CSS -->
     <link
         rel="stylesheet"
@@ -13,82 +18,139 @@
     >
 
     <!-- Our CSS -->
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 </head>
-<div id="QuestionBox">
+
+
 <body>
 
-    <h1 id="title">🌊 AquaGuessr 🌊</h1>
+    <!-- ========================= -->
+    <!-- QUESTION / GAME INFO -->
+    <!-- ========================= -->
 
-    <h2>Where does this fish live?</h2>
+    <div id="QuestionBox">
 
-    <!-- Fish information -->
-    <div id="fish-container">
+        <h1 id="title">
+            🌊 AquaGuessr 🌊
+        </h1>
 
-        <img
-            id="fish-image"
-            src=""
-            alt="Fish"
-        >
 
-        <h3 id="fish-name">Fish Name</h3>
+        <h2>
+            Where does this fish live?
+        </h2>
+
+
+        <!-- Fish information -->
+        <div id="fish-container">
+
+            <img
+                id="fish-image"
+                src=""
+                alt="Mystery Fish"
+            >
+
+            <h3 id="fish-name">
+                ???
+            </h3>
+
+        </div>
+
+
+        <!-- Game information -->
+        <div id="game-info">
+
+            <p>
+                Round:
+                <span id="round-number">
+                    1
+                </span>
+                / 5
+            </p>
+
+
+            <p>
+                Score:
+                <span id="total-score">
+                    0
+                </span>
+            </p>
+
+
+            <!--
+                This is the ONE game button.
+
+                game.js changes it between:
+                Submit Guess
+                Loading...
+                Next Fish
+            -->
+
+            <button id="submit-button">
+                Submit Guess
+            </button>
+
+        </div>
 
     </div>
 
 
-    <!-- Game information -->
-    <div id="game-info">
+    <!-- ========================= -->
+    <!-- RESULT -->
+    <!-- ========================= -->
 
-        <p>
-            Round:
-            <span id="round-number">1</span>
-            / 5
-        </p>
-        <p>
-            Score:
-            <span id="total-score">0</span>
-        </p>
-  <button id="submit-button">
-        Submit Guess
-    </button>
-</div>
+    <p id="result"></p>
 
-</div     >
-    <!-- Map -->
-    <!--<div id="map"></div>
--->
 
-    <!-- Game buttons -->
-    <button id="submit-button">
-        Submit Guess
-    </button>
+    <!--
+        Kept because the current game.js still references
+        next-button.
 
-    <button id="next-button" style="display: none;">
+        It stays hidden and is NOT used visually.
+    -->
+
+    <button
+        id="next-button"
+        style="display: none;"
+    >
         Next Fish
     </button>
 
-    <!-- Round result -->
-    <p id="result"></p>
 
-     <div id="map">
-    <!-- Leaflet JavaScript -->
-    <script id="map "
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-    </script>
-</div>
+    <!-- ========================= -->
+    <!-- MAP -->
+    <!-- ========================= -->
 
-    <!-- Our JavaScript -->
+    <div id="map"></div>
 
-    <!-- Controls the Leaflet map -->
+
+    <!-- ========================= -->
+    <!-- JAVASCRIPT -->
+    <!-- ========================= -->
+
+    <!-- Leaflet -->
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    ></script>
+
+
+    <!-- Controls Leaflet map -->
     <script src="js/map.js"></script>
 
-    <!-- Calculates points -->
+
+    <!-- Calculates score -->
     <script src="js/scoring.js"></script>
 
+
+    <!-- Species data -->
     <script src="js/species.js"></script>
 
-    <!-- Controls rounds and game flow -->
+
+    <!-- Controls game -->
     <script src="js/game.js"></script>
 
 </body>
-</html
+
+</html>

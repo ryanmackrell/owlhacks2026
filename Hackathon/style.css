@@ -1,81 +1,481 @@
+/* =========================================================
+   GLOBAL
+   ========================================================= */
 
-@keyframes myAnimation {
-    0% {background-color:red; left:0px; top:0px;}
-    25% {background-color: yellow; left:200px; top:0px;}
-    50% {background-color: lightcoral; left:200px; top:200px;}
-    75% {background-color: orange; left:0px; top:200px;}
-    100% {background-color: red; left:0px; top:0px;}
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
 }
-
-
 
 body {
     font-family: Arial, sans-serif;
-    text-align: center;
-    margin: 0;
-    background: linear-gradient(lightblue,black);
+    overflow: hidden;
 }
+
+
+/* =========================================================
+   GAME PAGE - MAP
+   ========================================================= */
+
 #map {
-    height: 100svh;
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
     width: 100vw;
+    height: 100vh;
+
     margin: 0;
-    background-size: 100% 100%;
+
     z-index: 1;
-
-
-
-    
-    
-    
 }
 
+
+/* =========================================================
+   GAME PAGE - QUESTION CARD
+   ========================================================= */
 
 #QuestionBox {
-    position:absolute;
-    top:20px;
+    position: absolute;
+
+    top: 50px;
     left: 20px;
-    width: 150px;
-    height: auto;
+
+    width: 320px;
+
+    padding: 20px;
+
+    box-sizing: border-box;
+
+    background: rgba(8, 30, 31, 0.94);
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.45);
+
+    color: white;
+
+    text-align: left;
+
     z-index: 1000;
-    
 }
 
-#title{
-    display: flex;
-    justify-content: center;
-    align-items: center;
+
+/* =========================================================
+   GAME PAGE - TITLE
+   ========================================================= */
+
+#title {
+    margin: 0 0 20px 0;
+
+    font-size: 28px;
+
+    color: white;
 }
 
+
+/* =========================================================
+   GAME PAGE - QUESTION
+   ========================================================= */
+
+#QuestionBox h2 {
+    margin: 0 0 18px 0;
+
+    font-size: 27px;
+    line-height: 1.15;
+
+    color: white;
+}
+
+
+/* =========================================================
+   GAME PAGE - FISH
+   ========================================================= */
+
+#fish-container {
+    width: 100%;
+}
 
 
 #fish-image {
-    width: 300px;
-    height: 200px;
+    display: block;
+
+    width: 100%;
+    height: 210px;
+
     object-fit: cover;
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
 
+#fish-name {
+    margin: 14px 0 12px 0;
+
+    font-size: 21px;
+
+    color: white;
+}
+
+
+/* =========================================================
+   GAME PAGE - ROUND / SCORE
+   ========================================================= */
+
+#game-info p {
+    margin: 7px 0;
+
+    font-size: 16px;
+
+    color: rgba(255, 255, 255, 0.8);
+}
+
+
+/* =========================================================
+   GAME PAGE - SUBMIT / NEXT FISH BUTTON
+   ========================================================= */
 
 #submit-button {
-    font-size: 18px;
-    padding: 10px 50px;
-    color: black;
-    background-color: white;
-    border-radius: 25px;
-    cursor:grab;
-    box-shadow: 0 5px 10px black;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    translate: 650px 100px;
-    
-    
+    display: block;
+
+    width: 100%;
+
+    margin-top: 18px;
+
+    padding: 12px 15px;
+
+    box-sizing: border-box;
+
+    font-size: 17px;
+    font-weight: bold;
+
+    color: #06282d;
+
+    background: #00e5ff;
+
+    border: none;
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* #submit-button {
-    justify-content: center;
-    align-items: center;
-    display: flex;
 
-    
-} */
+#submit-button:hover {
+    background: #5defff;
+}
+
+
+/* Old button is not used */
+
+#next-button {
+    display: none !important;
+}
+
+
+/* =========================================================
+   GAME PAGE - RESULTS
+   ========================================================= */
+
+#result {
+    position: absolute;
+
+    top: 20px;
+    left: 400px;
+
+    max-width: 500px;
+
+    margin: 0;
+
+    padding: 15px 20px;
+
+    box-sizing: border-box;
+
+    background: rgba(8, 30, 31, 0.94);
+
+    color: white;
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.4);
+
+    z-index: 1000;
+}
+
+
+#result:empty {
+    display: none;
+}
+
+
+/* =========================================================
+   INTRO PAGE
+   ========================================================= */
+
+html:has(body.intro_page) {
+    width: 100%;
+    height: 100%;
+}
+
+
+body.intro_page {
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+
+    background: #061b20;
+}
+
+
+/* =========================================================
+   INTRO PAGE - BACKGROUND
+   ========================================================= */
+
+.intro_page #background {
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    background:
+        linear-gradient(
+            rgba(2, 18, 25, 0.45),
+            rgba(2, 18, 25, 0.82)
+        ),
+        url("data/images/Whale Shark.jpg");
+
+    background-size: cover;
+    background-position: center;
+
+    z-index: 0;
+}
+
+
+/* =========================================================
+   INTRO PAGE - MENU CARD
+   ========================================================= */
+
+.intro_page .menu-card {
+    position: fixed;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: 430px;
+    max-width: calc(100vw - 40px);
+
+    padding: 45px;
+
+    box-sizing: border-box;
+
+    text-align: center;
+
+    color: white;
+
+    background: rgba(8, 30, 31, 0.93);
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.55);
+
+    backdrop-filter: blur(10px);
+
+    z-index: 100;
+}
+
+
+/* =========================================================
+   INTRO PAGE - LOGO
+   ========================================================= */
+
+.menu-logo {
+    margin-bottom: 5px;
+
+    font-size: 55px;
+}
+
+
+/* =========================================================
+   INTRO PAGE - TITLE
+   ========================================================= */
+
+.menu-title {
+    margin: 0;
+
+    font-size: 46px;
+    font-weight: 800;
+
+    color: white;
+}
+
+
+/* =========================================================
+   INTRO PAGE - SUBTITLE
+   ========================================================= */
+
+.menu-subtitle {
+    margin: 10px 0 25px;
+
+    font-size: 17px;
+
+    color: rgba(255, 255, 255, 0.75);
+}
+
+
+/* =========================================================
+   INTRO PAGE - DIVIDER
+   ========================================================= */
+
+.menu-divider {
+    width: 60px;
+    height: 3px;
+
+    margin: 0 auto 25px;
+
+    background: #00e5ff;
+
+    border-radius: 10px;
+}
+
+
+/* =========================================================
+   INTRO PAGE - DESCRIPTION
+   ========================================================= */
+
+.menu-description {
+    margin: 0 0 30px;
+
+    font-size: 17px;
+    line-height: 1.5;
+
+    color: rgba(255, 255, 255, 0.9);
+}
+
+
+/* =========================================================
+   INTRO PAGE - START BUTTON
+   ========================================================= */
+
+.start-button {
+    display: block;
+
+    width: 100%;
+
+    padding: 15px;
+
+    box-sizing: border-box;
+
+    background: #00e5ff;
+
+    color: #06282d;
+
+    border-radius: 12px;
+
+    text-decoration: none;
+
+    font-size: 19px;
+    font-weight: bold;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+.start-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 7px 20px rgba(0, 229, 255, 0.3);
+}
+
+
+/* =========================================================
+   INTRO PAGE - BOTTOM TEXT
+   ========================================================= */
+
+.menu-rounds {
+    margin: 20px 0 0;
+
+    font-size: 13px;
+
+    letter-spacing: 1px;
+
+    color: rgba(255, 255, 255, 0.55);
+}
+
+
+/* =========================================================
+   INTRO PAGE - PYSCRIPT
+   ========================================================= */
+
+.intro_page #ai_output {
+    display: none;
+}
+
+
+/* =========================================================
+   SMALL SCREENS
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    #QuestionBox {
+        top: 10px;
+        left: 10px;
+
+        width: 280px;
+
+        padding: 15px;
+    }
+
+
+    #fish-image {
+        height: 180px;
+    }
+
+
+    #QuestionBox h2 {
+        font-size: 23px;
+    }
+
+
+    .intro_page .menu-card {
+        width: calc(100vw - 30px);
+
+        padding: 30px;
+    }
+
+
+    .menu-title {
+        font-size: 38px;
+    }
+}

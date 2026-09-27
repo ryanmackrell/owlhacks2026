@@ -34,14 +34,13 @@ function updateGameDisplay() {
 
 function loadRandomSpecies() {
 
-    // If every species somehow gets used,
-    // reset the list.
+    // Reset if every species has somehow been used
     if (usedSpecies.length >= species.length) {
         usedSpecies = [];
     }
 
 
-    // Find species that have not been used yet
+    // Find species that have not been used
     const availableSpecies = species.filter(
         function (animal) {
 
@@ -64,7 +63,7 @@ function loadRandomSpecies() {
         availableSpecies[randomIndex];
 
 
-    // Remember that it was used
+    // Remember species
     usedSpecies.push(
         currentSpecies.scientificName
     );
@@ -74,16 +73,18 @@ function loadRandomSpecies() {
     // DISPLAY ANIMAL
     // -------------------------
 
+    // DON'T reveal the name yet
     document.getElementById("fish-name").textContent =
-        currentSpecies.name;
+        "???";
 
 
+    // Show image
     document.getElementById("fish-image").src =
         currentSpecies.image;
 
 
     document.getElementById("fish-image").alt =
-        currentSpecies.name;
+        "Mystery Fish";
 
 
     console.log(
@@ -95,37 +96,57 @@ function loadRandomSpecies() {
 
 
 // -------------------------
-// CALCULATE SCORE
-// -------------------------
-
-
-
-// -------------------------
 // START GAME
 // -------------------------
 
 function startGame() {
+    document
+    .getElementById("result")
+    .classList.remove("game-over");
 
     currentRound = 1;
     totalScore = 0;
 
-    // Allow all species again
     usedSpecies = [];
 
+
     resetMap();
+
 
     // Pick first animal
     loadRandomSpecies();
 
 
+    // Clear results
     document.getElementById("result").textContent =
         "";
 
 
-    document.getElementById("submit-button").style.display =
+    // -------------------------
+    // SET MAIN BUTTON
+    // -------------------------
+
+    const gameButton =
+        document.getElementById("submit-button");
+
+
+    gameButton.style.display =
         "inline-block";
 
 
+    gameButton.textContent =
+        "Submit Guess";
+
+
+    gameButton.disabled =
+        false;
+
+
+    gameButton.onclick =
+        submitGuess;
+
+
+    // Never use the separate Next Fish button
     document.getElementById("next-button").style.display =
         "none";
 
@@ -150,13 +171,21 @@ async function submitGuess() {
     }
 
 
-    // Stop player from changing their answer
+    // Stop player from changing answer
     lockGuess();
 
 
-    // Prevent player from clicking Submit twice
-    document.getElementById("submit-button").style.display =
-        "none";
+    const gameButton =
+        document.getElementById("submit-button");
+
+
+    // Disable while OBIS loads
+    gameButton.disabled =
+        true;
+
+
+    gameButton.textContent =
+        "Loading...";
 
 
     // -------------------------
@@ -166,6 +195,18 @@ async function submitGuess() {
     await showSpeciesDistribution(
         currentSpecies.scientificName
     );
+
+
+    // -------------------------
+    // REVEAL SPECIES NAME
+    // -------------------------
+
+    document.getElementById("fish-name").textContent =
+        currentSpecies.name;
+
+
+    document.getElementById("fish-image").alt =
+        currentSpecies.name;
 
 
     // -------------------------
@@ -207,9 +248,20 @@ async function submitGuess() {
         `;
 
 
-    // Show Next Fish
-    document.getElementById("next-button").style.display =
-        "inline-block";
+    // -------------------------
+    // CHANGE SAME BUTTON
+    // -------------------------
+
+    gameButton.textContent =
+        "Next Fish";
+
+
+    gameButton.disabled =
+        false;
+
+
+    gameButton.onclick =
+        nextRound;
 
 
     updateGameDisplay();
@@ -225,7 +277,7 @@ function nextRound() {
     currentRound++;
 
 
-    // Check if game is finished
+    // Game finished
     if (currentRound > maxRounds) {
 
         endGame();
@@ -234,11 +286,11 @@ function nextRound() {
     }
 
 
-    // Reset map
+    // Clear map and guess
     resetMap();
 
 
-    // Pick new animal
+    // Pick another species
     loadRandomSpecies();
 
 
@@ -247,12 +299,31 @@ function nextRound() {
         "";
 
 
-    // Show Submit again
-    document.getElementById("submit-button").style.display =
+    // -------------------------
+    // CHANGE BUTTON BACK
+    // -------------------------
+
+    const gameButton =
+        document.getElementById("submit-button");
+
+
+    gameButton.textContent =
+        "Submit Guess";
+
+
+    gameButton.style.display =
         "inline-block";
 
 
-    // Hide Next Fish
+    gameButton.disabled =
+        false;
+
+
+    gameButton.onclick =
+        submitGuess;
+
+
+    // Make absolutely sure old Next button stays hidden
     document.getElementById("next-button").style.display =
         "none";
 
@@ -267,37 +338,50 @@ function nextRound() {
 
 function endGame() {
 
-    // Lock map
     lockGuess();
 
-
-    // Hide buttons
     document.getElementById("submit-button").style.display =
         "none";
-
 
     document.getElementById("next-button").style.display =
         "none";
 
 
-    // Display final score
-    document.getElementById("result").innerHTML =
+    const resultBox =
+        document.getElementById("result");
+
+    // Give result box special Game Over styling
+    resultBox.classList.add("game-over");
+
+
+    resultBox.innerHTML =
         `
-        <h2>
-            Game Over!
-        </h2>
+        <div class="game-over-content">
 
-        <h3>
-            Final Score: ${totalScore}
-        </h3>
+            <div class="game-over-wave">
+                🌊
+            </div>
 
-        <button id="play-again-button">
-            Play Again
-        </button>
+            <h2>
+                Game Over!
+            </h2>
+
+            <p class="final-score-label">
+                Final Score
+            </p>
+
+            <div class="final-score">
+                ${totalScore}
+            </div>
+
+            <button id="play-again-button">
+                Play Again
+            </button>
+
+        </div>
         `;
 
 
-    // Play again button
     document
         .getElementById("play-again-button")
         .addEventListener(
@@ -308,23 +392,16 @@ function endGame() {
 
 
 // -------------------------
-// BUTTON EVENTS
+// BUTTON SETUP
 // -------------------------
 
-document
-    .getElementById("submit-button")
-    .addEventListener(
-        "click",
-        submitGuess
-    );
+document.getElementById("submit-button").onclick =
+    submitGuess;
 
 
-document
-    .getElementById("next-button")
-    .addEventListener(
-        "click",
-        nextRound
-    );
+// We don't use the separate Next Fish button anymore
+document.getElementById("next-button").style.display =
+    "none";
 
 
 // -------------------------
