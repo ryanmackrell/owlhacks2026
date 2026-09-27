@@ -49,6 +49,7 @@ const map = L.map("map", {
     maxZoom: 10,
 
     worldCopyJump: false
+
 }).setView([15, 0], 2);
 
 
@@ -74,7 +75,8 @@ function updateDragging() {
 
     if (map.getZoom() === map.getMinZoom()) {
         map.dragging.disable();
-    } else {
+    }
+    else {
         map.dragging.enable();
     }
 }
@@ -92,7 +94,6 @@ let playerGuess = null;
 let guessMarker = null;
 let guessLocked = false;
 
-
 map.on("click", function (event) {
 
     if (guessLocked) {
@@ -109,13 +110,13 @@ map.on("click", function (event) {
         playerGuess.lat,
         playerGuess.lng
     ])
-    .addTo(map)
-    .bindTooltip("Your Guess", {
-        permanent: true,
-        direction: "top",
-        offset: [-15, -12]
-    })
-    .openTooltip();
+        .addTo(map)
+        .bindTooltip("Your Guess", {
+            permanent: true,
+            direction: "top",
+            offset: [-15, -12]
+        })
+        .openTooltip();
 });
 
 
@@ -127,16 +128,13 @@ function hasPlayerGuessed() {
     return playerGuess !== null;
 }
 
-
 function getPlayerGuess() {
     return playerGuess;
 }
 
-
 function lockGuess() {
     guessLocked = true;
 }
-
 
 function unlockGuess() {
     guessLocked = false;
@@ -147,11 +145,13 @@ function unlockGuess() {
 // RANGE VARIABLES
 // =========================================================
 
-let currentRangeLayer = null;
-let historicalRangeLayer = null;
+// We keep these names as "current" so scoring.js does not
+// need to be changed.
+//
+// They now represent ALL available OBIS observations.
 
+let currentRangeLayer = null;
 let currentRangeGeoJSON = null;
-let historicalRangeGeoJSON = null;
 
 
 // =========================================================
@@ -166,10 +166,6 @@ let landReady = null;
     Loads:
 
         Hackathon/data/land.geojson
-
-    You already confirmed this file is accessible at:
-
-        /Hackathon/data/land.geojson
 */
 
 function loadLandMask() {
@@ -179,6 +175,7 @@ function loadLandMask() {
     }
 
     landReady = fetch("data/land.geojson")
+
         .then(function (response) {
 
             if (!response.ok) {
@@ -191,6 +188,7 @@ function loadLandMask() {
 
             return response.json();
         })
+
         .then(function (data) {
 
             landMask = data;
@@ -205,6 +203,7 @@ function loadLandMask() {
 
             return landMask;
         })
+
         .catch(function (error) {
 
             console.error(
@@ -232,23 +231,13 @@ loadLandMask();
 const OBIS_GRID_PRECISION = 3;
 
 
-// Older observations
-const HISTORICAL_END_DATE =
-    "2000-12-31";
-
-
-// Recent observations
-const CURRENT_START_DATE =
-    "2001-01-01";
-
-
 // =========================================================
 // RANGE SHAPE SETTINGS
 // =========================================================
 
 /*
-    We can make these a little larger again because
-    land will be cut out AFTER the range is generated.
+    These control how OBIS observations are converted
+    into the filled distribution areas.
 */
 
 const CLUSTER_DISTANCE_KM = 450;
@@ -266,17 +255,22 @@ const MIN_HULL_POINTS = 3;
 // GET OBIS DATA
 // =========================================================
 
-async function getObisGrid(
-    scientificName,
-    extraFilter = ""
-) {
+async function getObisGrid(scientificName) {
+
+    /*
+        IMPORTANT:
+
+        There is NO date filter anymore.
+
+        This request gets all available OBIS observations
+        for the selected species.
+    */
 
     const url =
         "https://api.obis.org/v3/occurrence/grid/" +
         OBIS_GRID_PRECISION +
         "?scientificname=" +
-        encodeURIComponent(scientificName) +
-        extraFilter;
+        encodeURIComponent(scientificName);
 
 
     console.log(
@@ -358,7 +352,8 @@ function cellsToPoints(data) {
                 ])
             );
 
-        } catch (error) {
+        }
+        catch (error) {
 
             console.warn(
                 "Skipped invalid OBIS feature."
@@ -457,8 +452,9 @@ function crossesDateLine(feature) {
 
         rings =
             geometry.coordinates;
+    }
 
-    } else if (
+    else if (
         geometry.type === "MultiPolygon"
     ) {
 
@@ -473,8 +469,9 @@ function crossesDateLine(feature) {
                 );
             }
         );
+    }
 
-    } else {
+    else {
 
         return false;
     }
@@ -632,7 +629,8 @@ function buildClusterRange(features) {
 
             return simplified;
 
-        } catch (error) {
+        }
+        catch (error) {
 
             console.warn(
                 "Hull failed:",
@@ -706,7 +704,8 @@ function buildClusterRange(features) {
 
             return null;
 
-        } catch (error) {
+        }
+        catch (error) {
 
             return null;
         }
@@ -743,7 +742,8 @@ function buildClusterRange(features) {
 
         return null;
 
-    } catch (error) {
+    }
+    catch (error) {
 
         return null;
     }
@@ -775,7 +775,8 @@ function boundingBoxesOverlap(
             first[1] > second[3]
         );
 
-    } catch (error) {
+    }
+    catch (error) {
 
         return false;
     }
@@ -887,7 +888,8 @@ function removeLandFromPolygon(rangePolygon) {
 
             landPiecesSubtracted++;
 
-        } catch (error) {
+        }
+        catch (error) {
 
             console.warn(
                 "Land subtraction failed:",
@@ -1032,127 +1034,7 @@ function createDistribution(data) {
 
 
 // =========================================================
-// HISTORICAL OBSERVATIONS
-// =========================================================
-
-async function showHistoricalRange(
-    scientificName
-) {
-
-    await turfReady;
-
-    // IMPORTANT:
-    // Wait for the land data before building polygons.
-    await loadLandMask();
-
-
-    if (historicalRangeLayer) {
-
-        map.removeLayer(
-            historicalRangeLayer
-        );
-
-        historicalRangeLayer =
-            null;
-    }
-
-
-    historicalRangeGeoJSON =
-        null;
-
-
-    try {
-
-        const data =
-            await getObisGrid(
-                scientificName,
-
-                "&enddate=" +
-                HISTORICAL_END_DATE
-            );
-
-
-        if (
-            !data.features ||
-            data.features.length === 0
-        ) {
-
-            console.log(
-                "No older observations:",
-                scientificName
-            );
-
-            return null;
-        }
-
-
-        const distribution =
-            createDistribution(data);
-
-
-        if (!distribution) {
-            return null;
-        }
-
-
-        historicalRangeGeoJSON =
-            distribution;
-
-
-        historicalRangeLayer =
-            L.geoJSON(
-                distribution,
-                {
-                    style: {
-
-                        color:
-                            "#ff8c00",
-
-                        weight: 2,
-
-                        opacity: 0.85,
-
-                        dashArray:
-                            "8 6",
-
-                        fillColor:
-                            "#ff8c00",
-
-                        fillOpacity:
-                            0.13,
-
-                        lineJoin:
-                            "round",
-
-                        lineCap:
-                            "round"
-                    }
-                }
-            )
-            .addTo(map);
-
-
-        console.log(
-            "Older observations displayed."
-        );
-
-
-        return historicalRangeLayer;
-
-    } catch (error) {
-
-        console.error(
-            "Historical range error:",
-            error
-        );
-
-        return null;
-    }
-}
-
-
-// =========================================================
-// CURRENT OBSERVATIONS
+// OBSERVED DISTRIBUTION
 // =========================================================
 
 async function showCurrentRange(
@@ -1161,8 +1043,7 @@ async function showCurrentRange(
 
     await turfReady;
 
-    // IMPORTANT:
-    // Wait for the land file BEFORE making the range.
+    // Wait for land data before building polygons.
     await loadLandMask();
 
 
@@ -1183,12 +1064,16 @@ async function showCurrentRange(
 
     try {
 
+        /*
+            No start date or end date is passed here.
+
+            This means ALL available OBIS observations
+            for the species are used.
+        */
+
         const data =
             await getObisGrid(
-                scientificName,
-
-                "&startdate=" +
-                CURRENT_START_DATE
+                scientificName
             );
 
 
@@ -1198,7 +1083,7 @@ async function showCurrentRange(
         ) {
 
             console.log(
-                "No recent observations:",
+                "No observations:",
                 scientificName
             );
 
@@ -1214,6 +1099,11 @@ async function showCurrentRange(
             return null;
         }
 
+
+        /*
+            Keep using currentRangeGeoJSON internally
+            so scoring.js does not have to change.
+        */
 
         currentRangeGeoJSON =
             distribution;
@@ -1246,7 +1136,7 @@ async function showCurrentRange(
                     }
                 }
             )
-            .addTo(map);
+                .addTo(map);
 
 
         currentRangeLayer
@@ -1254,16 +1144,17 @@ async function showCurrentRange(
 
 
         console.log(
-            "Recent observations displayed."
+            "Observed distribution displayed."
         );
 
 
         return currentRangeLayer;
 
-    } catch (error) {
+    }
+    catch (error) {
 
         console.error(
-            "Current range error:",
+            "Observed distribution error:",
             error
         );
 
@@ -1294,13 +1185,12 @@ async function showSpeciesDistribution(
     clearRanges();
 
 
-    // Purple underneath
-    await showHistoricalRange(
-        scientificName
-    );
+    /*
+        Only ONE distribution is generated now.
 
+        It contains all available OBIS observations.
+    */
 
-    // Green on top
     await showCurrentRange(
         scientificName
     );
@@ -1314,7 +1204,7 @@ async function showSpeciesDistribution(
 
 
 // =========================================================
-// CHECK IF GUESS IS INSIDE CURRENT RANGE
+// CHECK IF GUESS IS INSIDE OBSERVED DISTRIBUTION
 // =========================================================
 
 function isGuessInsideCurrentRange() {
@@ -1353,7 +1243,8 @@ function isGuessInsideCurrentRange() {
                 return true;
             }
 
-        } catch (error) {
+        }
+        catch (error) {
 
             console.warn(
                 "Could not test polygon."
@@ -1375,18 +1266,8 @@ function getCurrentRangeLayer() {
 }
 
 
-function getHistoricalRangeLayer() {
-    return historicalRangeLayer;
-}
-
-
 function getCurrentRangeGeoJSON() {
     return currentRangeGeoJSON;
-}
-
-
-function getHistoricalRangeGeoJSON() {
-    return historicalRangeGeoJSON;
 }
 
 
@@ -1407,21 +1288,7 @@ function clearRanges() {
     }
 
 
-    if (historicalRangeLayer) {
-
-        map.removeLayer(
-            historicalRangeLayer
-        );
-
-        historicalRangeLayer =
-            null;
-    }
-
-
     currentRangeGeoJSON =
-        null;
-
-    historicalRangeGeoJSON =
         null;
 }
 

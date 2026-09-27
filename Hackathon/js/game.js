@@ -98,28 +98,6 @@ function loadRandomSpecies() {
 // CALCULATE SCORE
 // -------------------------
 
-function calculateScore(distance) {
-
-    if (distance <= 1) {
-        return 5000;
-    }
-
-    else if (distance <= 10) {
-        return 4000;
-    }
-
-    else if (distance <= 50) {
-        return 3000;
-    }
-
-    else if (distance <= 100) {
-        return 2000;
-    }
-
-    else {
-        return 1000;
-    }
-}
 
 
 // -------------------------
@@ -191,15 +169,13 @@ async function submitGuess() {
 
 
     // -------------------------
-    // TEMPORARY SCORE
+    // CALCULATE SCORE
     // -------------------------
-    //
-    // scoring.js can replace this later.
 
-    const roundScore = 1000;
+    const roundScore =
+        calculateScore();
 
 
-    // Add score
     totalScore += roundScore;
 
 
