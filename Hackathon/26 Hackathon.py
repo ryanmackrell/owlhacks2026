@@ -118,7 +118,7 @@ for attempt in range(max_retries):
     try:
         # Your Gemini API call
         response = client.models.generate_content(
-            model="gemini-3.8-flash",
+            model="gemini-3.8-flash-live",
             contents="Give me data about a leatherback."
         )
         
