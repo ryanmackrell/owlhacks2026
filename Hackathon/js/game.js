@@ -7,6 +7,12 @@ let totalScore = 0;
 
 const maxRounds = 5;
 
+// Current animal being played
+let currentSpecies = null;
+
+// Keeps animals from repeating during a game
+let usedSpecies = [];
+
 
 // -------------------------
 // UPDATE GAME DISPLAY
@@ -21,24 +27,95 @@ function updateGameDisplay() {
         totalScore;
 }
 
-//-------------------------
-// Calculate Score
-//-------------------------
+
+// -------------------------
+// LOAD RANDOM SPECIES
+// -------------------------
+
+function loadRandomSpecies() {
+
+    // If every species somehow gets used,
+    // reset the list.
+    if (usedSpecies.length >= species.length) {
+        usedSpecies = [];
+    }
+
+
+    // Find species that have not been used yet
+    const availableSpecies = species.filter(
+        function (animal) {
+
+            return !usedSpecies.includes(
+                animal.scientificName
+            );
+        }
+    );
+
+
+    // Pick random species
+    const randomIndex =
+        Math.floor(
+            Math.random() *
+            availableSpecies.length
+        );
+
+
+    currentSpecies =
+        availableSpecies[randomIndex];
+
+
+    // Remember that it was used
+    usedSpecies.push(
+        currentSpecies.scientificName
+    );
+
+
+    // -------------------------
+    // DISPLAY ANIMAL
+    // -------------------------
+
+    document.getElementById("fish-name").textContent =
+        currentSpecies.name;
+
+
+    document.getElementById("fish-image").src =
+        currentSpecies.image;
+
+
+    document.getElementById("fish-image").alt =
+        currentSpecies.name;
+
+
+    console.log(
+        "Current species:",
+        currentSpecies.name,
+        "(" + currentSpecies.scientificName + ")"
+    );
+}
+
+
+// -------------------------
+// CALCULATE SCORE
+// -------------------------
 
 function calculateScore(distance) {
 
     if (distance <= 1) {
         return 5000;
     }
+
     else if (distance <= 10) {
         return 4000;
     }
+
     else if (distance <= 50) {
         return 3000;
     }
+
     else if (distance <= 100) {
         return 2000;
     }
+
     else {
         return 1000;
     }
@@ -54,15 +131,26 @@ function startGame() {
     currentRound = 1;
     totalScore = 0;
 
+    // Allow all species again
+    usedSpecies = [];
+
     resetMap();
 
-    document.getElementById("result").textContent = "";
+    // Pick first animal
+    loadRandomSpecies();
+
+
+    document.getElementById("result").textContent =
+        "";
+
 
     document.getElementById("submit-button").style.display =
         "inline-block";
 
+
     document.getElementById("next-button").style.display =
         "none";
+
 
     updateGameDisplay();
 }
@@ -72,7 +160,7 @@ function startGame() {
 // SUBMIT GUESS
 // -------------------------
 
-function submitGuess() {
+async function submitGuess() {
 
     // Make sure player selected somewhere
     if (!hasPlayerGuessed()) {
@@ -88,11 +176,25 @@ function submitGuess() {
     lockGuess();
 
 
+    // Prevent player from clicking Submit twice
+    document.getElementById("submit-button").style.display =
+        "none";
+
+
+    // -------------------------
+    // SHOW SPECIES DISTRIBUTION
+    // -------------------------
+
+    await showSpeciesDistribution(
+        currentSpecies.scientificName
+    );
+
+
     // -------------------------
     // TEMPORARY SCORE
     // -------------------------
     //
-    // scoring.js will replace this later
+    // scoring.js can replace this later.
 
     const roundScore = 1000;
 
@@ -101,14 +203,32 @@ function submitGuess() {
     totalScore += roundScore;
 
 
-    // Show result
-    document.getElementById("result").textContent =
-        "Round Score: +" + roundScore;
+    // -------------------------
+    // SHOW RESULT
+    // -------------------------
 
+    document.getElementById("result").innerHTML =
+        `
+        <strong>
+            Round Score: +${roundScore}
+        </strong>
 
-    // Hide Submit
-    document.getElementById("submit-button").style.display =
-        "none";
+        <br><br>
+
+        <strong>
+            Conservation Status:
+        </strong>
+
+        ${currentSpecies.conservationStatus}
+
+        <br><br>
+
+        <strong>
+            Fun Fact:
+        </strong>
+
+        ${currentSpecies.funFact}
+        `;
 
 
     // Show Next Fish
@@ -142,8 +262,13 @@ function nextRound() {
     resetMap();
 
 
+    // Pick new animal
+    loadRandomSpecies();
+
+
     // Clear previous result
-    document.getElementById("result").textContent = "";
+    document.getElementById("result").textContent =
+        "";
 
 
     // Show Submit again
@@ -174,6 +299,7 @@ function endGame() {
     document.getElementById("submit-button").style.display =
         "none";
 
+
     document.getElementById("next-button").style.display =
         "none";
 
@@ -181,7 +307,9 @@ function endGame() {
     // Display final score
     document.getElementById("result").innerHTML =
         `
-        <h2>Game Over!</h2>
+        <h2>
+            Game Over!
+        </h2>
 
         <h3>
             Final Score: ${totalScore}
@@ -196,7 +324,10 @@ function endGame() {
     // Play again button
     document
         .getElementById("play-again-button")
-        .addEventListener("click", startGame);
+        .addEventListener(
+            "click",
+            startGame
+        );
 }
 
 
@@ -206,12 +337,18 @@ function endGame() {
 
 document
     .getElementById("submit-button")
-    .addEventListener("click", submitGuess);
+    .addEventListener(
+        "click",
+        submitGuess
+    );
 
 
 document
     .getElementById("next-button")
-    .addEventListener("click", nextRound);
+    .addEventListener(
+        "click",
+        nextRound
+    );
 
 
 // -------------------------
