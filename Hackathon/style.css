@@ -189,37 +189,145 @@ body {
    GAME PAGE - RESULTS
    ========================================================= */
 
+/* =========================================================
+   NORMAL ROUND RESULT
+   ========================================================= */
+
 #result {
     position: absolute;
-
-    top: 20px;
+    top: 50px;
     left: 400px;
 
-    max-width: 500px;
+    width: 450px;
 
     margin: 0;
-
-    padding: 15px 20px;
+    padding: 20px;
 
     box-sizing: border-box;
 
-    background: rgba(8, 30, 31, 0.94);
-
+    background: rgba(8, 30, 31, 0.96);
     color: white;
 
     border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
 
-    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 
-    box-shadow:
-        0 6px 20px rgba(0, 0, 0, 0.4);
-
-    z-index: 1000;
+    z-index: 1500;
 }
-
 
 #result:empty {
     display: none;
+}
+
+
+/* =========================================================
+   GAME OVER
+   ========================================================= */
+
+#result.game-over {
+    position: fixed !important;
+
+    top: 50% !important;
+    left: 50% !important;
+
+    transform: translate(-50%, -50%) !important;
+
+    width: 450px !important;
+    max-width: calc(100vw - 40px) !important;
+
+    padding: 45px !important;
+
+    margin: 0 !important;
+
+    text-align: center !important;
+
+    background: rgba(8, 30, 31, 0.98) !important;
+
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 25px !important;
+
+    box-shadow: 0 20px 70px rgba(0, 0, 0, 0.7) !important;
+
+    color: white !important;
+
+    z-index: 9999 !important;
+}
+
+
+/* Wave */
+
+#result.game-over .game-over-wave {
+    font-size: 55px;
+
+    margin-bottom: 10px;
+}
+
+
+/* GAME OVER */
+
+#result.game-over h2 {
+    margin: 0 0 30px 0;
+
+    font-size: 42px;
+    font-weight: 800;
+
+    color: white;
+}
+
+
+/* FINAL SCORE label */
+
+#result.game-over .final-score-label {
+    margin: 0 0 5px 0;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+    color: rgba(255, 255, 255, 0.6);
+}
+
+
+/* Actual score */
+
+#result.game-over .final-score {
+    margin: 0 0 35px 0;
+
+    font-size: 64px;
+    font-weight: 800;
+
+    color: #00e5ff;
+}
+
+
+/* Play Again */
+
+#result.game-over #play-again-button {
+    display: block;
+
+    width: 100%;
+
+    padding: 15px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: #00e5ff;
+
+    color: #06282d;
+
+    font-size: 19px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+#result.game-over #play-again-button:hover {
+    background: #5defff;
 }
 
 

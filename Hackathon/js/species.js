@@ -252,41 +252,6 @@ const species = [
         funFact: "This small shark prefers coral reef habitats."
     },
     {
-        name: "Arapaima",
-        scientificName: "Arapaima gigas",
-        image: "data/images/Arapaima.jpg",
-        conservationStatus: "Data Deficient",
-        funFact: "It can breathe air at the water's surface."
-    },
-    {
-        name: "Piranha",
-        scientificName: "Pygocentrus nattereri",
-        image: "data/images/Piranha.jpg",
-        conservationStatus: "Least Concern",
-        funFact: "Contrary to myths, piranhas rarely attack humans."
-    },
-    {
-        name: "Electric Eel",
-        scientificName: "Electrophorus electricus",
-        image: "data/images/Electric Eel.jpg",
-        conservationStatus: "Least Concern",
-        funFact: "It can generate electrical shocks over 600 volts."
-    },
-    {
-        name: "Chinese Giant Salamander",
-        scientificName: "Andrias davidianus",
-        image: "data/images/Chinese Giant Salamander.jpg",
-        conservationStatus: "Critically Endangered",
-        funFact: "It is the world's largest amphibian."
-    },
-    {
-        name: "Axolotl",
-        scientificName: "Ambystoma mexicanum",
-        image: "data/images/Axolotl.jpg",
-        conservationStatus: "Critically Endangered",
-        funFact: "Axolotls can regenerate entire limbs."
-    },
-    {
         name: "Manatee",
         scientificName: "Trichechus manatus",
         image: "data/images/Manatee.jpg",
@@ -525,25 +490,11 @@ const species = [
         funFact: "Pike are ambush predators with razor-sharp teeth."
     },
     {
-        name: "Muskellunge",
-        scientificName: "Esox masquinongy",
-        image: "data/images/Muskellunge.jpg",
-        conservationStatus: "Least Concern",
-        funFact: "It is often called the fish of ten thousand casts."
-    },
-    {
         name: "Rainbow Trout",
         scientificName: "Oncorhynchus mykiss",
         image: "data/images/Rainbow Trout.jpg",
         conservationStatus: "Least Concern",
         funFact: "Some populations migrate to the ocean and become steelhead."
-    },
-    {
-        name: "Brook Trout",
-        scientificName: "Salvelinus fontinalis",
-        image: "data/images/Brook Trout.jpg",
-        conservationStatus: "Least Concern",
-        funFact: "Brook trout are actually a type of char, not a true trout."
     },
     {
         name: "White Sturgeon",
@@ -559,11 +510,4 @@ const species = [
         conservationStatus: "Least Concern",
         funFact: "Alligator gars can breathe both air and water."
     },
-    {
-        name: "African Lungfish",
-        scientificName: "Protopterus annectens",
-        image: "data/images/African Lungfish.jpg",
-        conservationStatus: "Least Concern",
-        funFact: "It can survive droughts by burying itself in mud."
-    }
 ];
