@@ -9,7 +9,6 @@
 
 
 
-
 body {
     font-family: Arial, sans-serif;
     text-align: center;
@@ -24,10 +23,12 @@ body {
     z-index: 1;
 
 
+
     
     
     
 }
+
 
 #QuestionBox {
     position:absolute;
@@ -39,6 +40,12 @@ body {
     
 }
 
+#title{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 #fish-image {
     width: 300px;
     height: 200px;
@@ -46,19 +53,26 @@ body {
 }
 
 
-#submit-butto:before {
+
+#submit-button {
     font-size: 18px;
     padding: 10px 50px;
     color: black;
     background-color: white;
     border-radius: 25px;
     cursor:grab;
-    box-shadow: 0 5px 10px black
+    box-shadow: 0 5px 10px black;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    
 
+}
+
+/* #submit-button {
+    justify-content: center;
+    align-items: center;
+    display: flex;
 
     
-}
-#submit-button:hover {
-    background-color: black;
-    color: white
-}
+} */
