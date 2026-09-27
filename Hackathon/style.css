@@ -46,6 +46,8 @@ body {
     align-items: center;
 }
 
+
+
 #fish-image {
     width: 300px;
     height: 200px;
@@ -65,8 +67,9 @@ body {
     justify-content: center;
     align-items: center;
     display: flex;
+    translate: 650px 100px;
     
-
+    
 }
 
 /* #submit-button {
